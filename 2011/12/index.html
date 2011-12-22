@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="txt/html; charset=UTF-8">
   <meta name="Generator" content="BlazeBlogger 1.2.0">
   <meta name="Copyright" content="&copy; 2011 Alessandro Ranellucci">
-  <meta name="Date" content="Fri Dec 16 19:13:22 2011">
+  <meta name="Date" content="Thu Dec 22 19:29:28 2011">
   <meta name="Description" content="STL-to-GCODE translator for RepRap printers">
   <meta name="Keywords" content="Archive for December 2011, reprap,3D print,prusa,prusa mendel,skeinforge">
   <link rel="stylesheet" href="../../default.css" type="text/css">
@@ -103,7 +103,7 @@
     <div style="float: right" class="sidebar">
       <h3>News Archive</h3>
       <ul id="archive">
-        <li><a href="../../2011/12">December 2011 (3)</a></li>
+        <li><a href="../../2011/12">December 2011 (4)</a></li>
 <li><a href="../../2011/11">November 2011 (5)</a></li>
       </ul>
       <h3>Links</h3>
@@ -125,6 +125,35 @@
     </div>
     <div style="width: 500px">
       <div class="section">Archive for December 2011</div>
+
+<h2 class="post"><a href="../../2011/12/9-slic3r-057-is-out" rel="permalink">Slic3r 0.5.7 is out!</a></h2>
+<div class="information">
+   <span class="date">2011-12-22</span>
+</div>
+
+<h4>New features:</h4>
+<ul>
+    <li><i>Slice and save as...</i> command to <b>choose the output file name</b></li>
+    <li>Compatibility with Windows XP 64</li>
+    <li>Total filament length is written to the output file and showed on command line</li>
+</ul>
+
+<h4>Improvements:</h4>
+<ul>
+    <li><b>Improved flow and overlapping for solid surfaces</b> by using a better physical model in internal calculations; this gives much <b>higher quality</b> making it less sparse then it was before</li>
+    <li>Improved the slicing algorithm; this should <b>reduce the STL warnings</b></li>
+    <li>Better overlapping for loops</li>
+    <li>Concentric infill now uses the adjusted flow spacing for better surface quality; it also starts infilling always from the center point.</li>
+    <li><b>Reduced packages size</b> by 10-20%; they also launch faster</li>
+    <li>Always use rectilinear infill for internal solid surfaces</li>
+    <li>Limit skirt height to print height</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>Concentric infill was throwing errors</li>
+    <li>Extrusion was calculated incorrectly for clock-wise arcs when using the experimental <i>--gcode-arcs</i> option</li>
+</ul>
 
 <h2 class="post"><a href="../../2011/12/8-slic3r-056-is-out" rel="permalink">Slic3r 0.5.6 is out!</a></h2>
 <div class="information">

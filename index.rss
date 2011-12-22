@@ -6,6 +6,37 @@
   <description>STL-to-GCODE translator for RepRap printers</description>
   <generator>BlazeBlogger 1.2.0</generator>
   <item>
+    <title>Slic3r 0.5.7 is out!</title>
+    <link>http://slic3r.org/blog/2011/12/9-slic3r-057-is-out/</link>
+    <guid>http://slic3r.org/blog/2011/12/9-slic3r-057-is-out/</guid>
+    <pubDate>Thu, 22 Dec 2011 00:00:01 GMT</pubDate>
+    <description><![CDATA[
+<h4>New features:</h4>
+<ul>
+    <li><i>Slice and save as...</i> command to <b>choose the output file name</b></li>
+    <li>Compatibility with Windows XP 64</li>
+    <li>Total filament length is written to the output file and showed on command line</li>
+</ul>
+
+<h4>Improvements:</h4>
+<ul>
+    <li><b>Improved flow and overlapping for solid surfaces</b> by using a better physical model in internal calculations; this gives much <b>higher quality</b> making it less sparse then it was before</li>
+    <li>Improved the slicing algorithm; this should <b>reduce the STL warnings</b></li>
+    <li>Better overlapping for loops</li>
+    <li>Concentric infill now uses the adjusted flow spacing for better surface quality; it also starts infilling always from the center point.</li>
+    <li><b>Reduced packages size</b> by 10-20%; they also launch faster</li>
+    <li>Always use rectilinear infill for internal solid surfaces</li>
+    <li>Limit skirt height to print height</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>Concentric infill was throwing errors</li>
+    <li>Extrusion was calculated incorrectly for clock-wise arcs when using the experimental <i>--gcode-arcs</i> option</li>
+</ul>
+    ]]></description>
+  </item>
+  <item>
     <title>Slic3r 0.5.6 is out!</title>
     <link>http://slic3r.org/blog/2011/12/8-slic3r-056-is-out/</link>
     <guid>http://slic3r.org/blog/2011/12/8-slic3r-056-is-out/</guid>
