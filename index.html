@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="txt/html; charset=UTF-8">
   <meta name="Generator" content="BlazeBlogger 1.2.0">
   <meta name="Copyright" content="&copy; 2012 Alessandro Ranellucci">
-  <meta name="Date" content="Thu Jan 19 17:54:44 2012">
+  <meta name="Date" content="Sat Jan 21 19:35:01 2012">
   <meta name="Description" content="STL-to-GCODE translator for RepRap printers">
   <meta name="Keywords" content="reprap,3D print,prusa,prusa mendel,skeinforge">
   <link rel="stylesheet" href="default.css" type="text/css">
@@ -103,7 +103,7 @@
     <div style="float: right" class="sidebar">
       <h3>News Archive</h3>
       <ul id="archive">
-        <li><a href="2012/01">January 2012 (1)</a></li>
+        <li><a href="2012/01">January 2012 (2)</a></li>
 <li><a href="2011/12">December 2011 (4)</a></li>
 <li><a href="2011/11">November 2011 (5)</a></li>
       </ul>
@@ -140,6 +140,47 @@
     </div>
     <div style="width: 500px">
       
+<h2 class="post"><a href="2012/01/11-060-is-out" rel="permalink">0.6.0 is out!</a></h2>
+<div class="information">
+   <span class="date">2012-01-21</span>
+</div>
+
+After much work, a new beefy release of Slic3r is ready for download.
+
+<h4>New features:</h4>
+<ul>
+    <li><b>thin walls!</b></li>
+    <li>new <i>Output Filename Format</i> option to allow for complex output filenames using option values (like <i>foo_3perimeters_0.15height.gcode</i>)</li>
+    <li>automatic retraction at the end of the print</li>
+</ul>
+
+<h4>Improvements:</h4>
+<ul>
+    <li>much better overlap between infill and perimeters in those situations where previous version was still producing gaps</li>
+    <li>smarter order for hole perimeters to save travel and time</li>
+    <li>large internal refactoring (less memory and some speed)</li>
+    <li>bridges now have higher priority than other solid regions</li>
+    <li>loops are now closed better</li>
+    <li>use solid print speed for internal solid layers too</li>
+    <li>checkbox in GUI to enable comments in G-code</li>
+    <li>warn if no layers were detected</li>
+</ul>
+
+<h4>Changes:</h4>
+<ul>
+    <li>Windows package is now distributed as a ZIP file rather than a self-extracting executable</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>some island having no holes and contained in holes themselves were ignored</li>
+    <li>fatal error in arc detection code</li>
+    <li>wrong month number in output</li>
+    <li>small regions were infilled even with fill_density = 0</li>
+    <li>fill was escaping perimeters near some corners</li>
+    <li>other fatal errors removed, especially when dealing with dirty files</li>
+</ul>
+
 <h2 class="post"><a href="2012/01/10-here-and-there-in-the-slic3r-community" rel="permalink">Here and there in the Slic3r community</a></h2>
 <div class="information">
    <span class="date">2012-01-07</span>
@@ -402,25 +443,7 @@ After 10 more days of work, a new release is out!
     <li>G2/G3 coordinates for experimental arcs were wrong</li>
     <li>print first layer at Z = 1 * layer height instead of zero</li>
 </ul>
-
-<h2 class="post"><a href="2011/11/2-the-birth-of-a-slic3r-community" rel="permalink">The birth of a Slic3r community</a></h2>
-<div class="information">
-   <span class="date">2011-11-13</span>
-</div>
-
-<p>Here we are. After two months since I started to write this software from scratch, there are many people enjoying using it. And I'm enjoying to receive their feedback!</p>
-
-<p><a href="http://techpaladin.com/">Tech Paladin</a> published a post entitled <a href="http://techpaladin.com/2011/11/06/slic3r-0wns/">Slic3r 0wns</a> with some pictures:<br />
-<img src="http://techpaladin.com/wp-content/uploads/2011/11/magic-fish.jpg" width="350" height="225">
-</p>
-
-<p>Joachim Glauche, owner of <a href="http://www.reprapsource.com/">RepRapSource.com</a> and creator of the <a href="http://www.shapercube.com/">ShaperCube</a> published some <a href="https://picasaweb.google.com/102048359095706720847/Prints">pictures of nice high-resolution prints</a> sliced thanks to the speed and accuracy of Slic3r.<br>
-<img src="https://lh5.googleusercontent.com/-ek2nHi3cjoY/TrllGsHhLlI/AAAAAAAAAOs/WuCuTnUWUvc/s800/IMG_0402.JPG" width="400" height="327">
-</p>
-
-<p>Some people printed the same object with Slic3r and Skeinforge and published pictures with the comparison: see <a href="http://www.flickr.com/photos/blue_metal/6341424872"> this picture</a> by Blue_Metal, <a href="http://www.flickr.com/photos/13659531@N03/6334203975/">this one</a> by John Ridley. Also, see <a href="http://www.flickr.com/photos/rgoodwin/6338090839/">this picture</a> by Richard Goodwin.</p>
-
-<p>There are also a couple YouTube videos: <a href="http://www.youtube.com/watch?v=0r3hgcKZIVs">this</a> and <a href="http://www.youtube.com/watch?v=xjpbObDwwcI">that</a>.</p>
+<div class="previous"><a href="index1.html" rel="prev">&laquo; Previous</a></div>
 
       <div style="clear: both"></div>
     </div>
