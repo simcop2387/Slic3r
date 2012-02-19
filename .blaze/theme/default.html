@@ -162,9 +162,15 @@ $ sudo perl Build.PL
 $ sudo cpan Wx</pre>
         
         <p><b>Note for Ubuntu users:</b> you must first install the <i>build-essential</i>, <i>libgtk2.0-dev</i>
-        <i>libwxgtk2.8-dev</i> and <i>libmodule-build-perl</i> packages.</p>
+        <i>libwxgtk2.8-dev</i> and <i>libmodule-build-perl</i> packages. Should you have problems with the 
+        <i>sudo perl Build.PL</i> command, you can replace it with <i>curl -L http://cpanmin.us | perl - --sudo .</i>
+        which should work a lot better on some Ubuntu systems having broken CPAN setups.</p>
         
-        <p><b>Note for Mac users:</b> you must first install the <i>Developer Tools</i> (XCode) supplied on your OS X install disk.</p>
+        <p><b>Note for Mac users:</b> you must first install the <i>Developer Tools</i> (XCode) supplied on your OS X install disk. 
+            If you are on Lion, you have to issue the following commands before running the above ones: <br />
+            <i>export VERSIONER_PERL_VERSION=5.10</i><br />
+            <i>export VERSIONER_PERL_PREFER_32_BIT=yes</i><br />
+            Also, note that the above hint about the <i>cpanmin.us</i> way applies to Mac too.</p>
         
         <p><b>Note for Win users:</b> see <a href="https://github.com/alexrj/Slic3r/wiki/Running-Slic3r-from-git-on-Windows">this page</a> for instructions.</p>
 
