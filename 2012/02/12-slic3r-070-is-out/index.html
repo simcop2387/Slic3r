@@ -141,28 +141,53 @@
     </div>
     <div style="width: 500px">
       
-<h2 class="post">0.5.5b is out!</h2>
+<h2 class="post">Slic3r 0.7.0 is out!</h2>
 <div class="information">
-   <span class="date">2011-12-05</span>
+   <span class="date">2012-02-26</span>
 </div>
+
+This is a very important update: don't miss it and enjoy the goodies!
+
+<h4>Major new features:</h4>
+<ul>
+    <li>a <b>new rock-solid slicing algorithm</b>, based on a topological approach, able to process efficiently a wide range of STL files without any warning</li>
+    <li>generation of <b>support material</b> (optionally, with a <b>second extruder</b>)</li>
+    <li><b>cooling</b> and <b>fan control</b></li>
+    <li>ability to read the <b>AMF</b> format</li>
+</ul>
 
 <h4>New features:</h4>
 <ul>
-    <li>optimal bridging direction is detected for more bridges</li>
-    <li>flow width is auto adjusted to avoid leaving gaps at the border of solid regions</li>
-    <li>customizable speed for small perimeters</li>
-    <li>customizable multiplier for the flow rate used when bridging</li>
+    <li><b>first layer temperature</b></li>
+    <li>support for <b>Makerbot</b> and <b>Mach3</b> G-code flavors</li>
+    <li>duplication is performed on generated toolpaths instead of 3D mesh, resulting in a <b>nearly-constant time</b> for any number of object copies</li>
+    <li>infill and support material are <b>multi-threaded</b>, so they will take advantage of multiple CPUs/cores</li>
+    <li>support for custom post-processing scripts</li>
+    <li>new notes field in configuration profiles</li>
 </ul>
 
 <h4>Improvements:</h4>
 <ul>
-    <li>important settings are marked in bold -- new users can start printing by  changing only those ones</li>
-    <li>infill segments are now connected to allow better sticking to the perimeters</li>
+    <li>uses 40% less memory</li>
+    <li>ability to load multiple config files using the command line</li>
+    <li>ask for confirmation when slicing more than one copy</li>
+    <li>contours and holes are extruded in the same direction (ccw)</li>
+    <li>skein multiple files with a single command from command line</li>
+    <li>some compensation for hole shrinkage</li>
+</ul>
+
+<h4>Minor improvements:</h4>
+<ul>
+    <li>do not display the progress dialog as an application-wide modal dialog</li>
+    <li>Config files are now portable between Unix and Windows and allow for Unicode characters</li>
+    <li>added extrusion multiplier to G-code comments</li>
 </ul>
 
 <h4>Bugfixes:</h4>
 <ul>
-    <li>0.5.4 was less tolerant than 0.5.3 about dirty STL models</li>
+    <li>models with rounded walls had small useless infill regions</li>
+    <li>small perimeter speed was applied to all holes too, regardless of their size</li>
+    <li>fixed some fatal errors</li>
 </ul>
 
       <div style="clear: both"></div>

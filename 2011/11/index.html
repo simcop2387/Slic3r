@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="txt/html; charset=UTF-8">
   <meta name="Generator" content="BlazeBlogger 1.2.0">
   <meta name="Copyright" content="&copy; 2012 Alessandro Ranellucci">
-  <meta name="Date" content="Sun Feb 19 19:24:25 2012">
+  <meta name="Date" content="Sun Feb 26 18:56:36 2012">
   <meta name="Description" content="STL-to-GCODE translator for RepRap printers">
   <meta name="Keywords" content="Archive for November 2011, reprap,3D print,prusa,prusa mendel,skeinforge">
   <link rel="stylesheet" href="../../default.css" type="text/css">
@@ -88,7 +88,7 @@
       STL-to-GCODE translator for RepRap printers
     </div>
     <p>So you've got a 3D printer and a STL file to print. You need a software to convert it to a series of layers and to generate the toolpaths to build it.</p><img src="/images/screenshot.png" style="float: right">
-    <p>Here comes Slic3r! Its goals are:</p>
+    <p>Here comes Slic3r! Its features are:</p>
     <ul>
       <li><strong>speed</strong></li>
       <li><strong>easy configuration</strong> and little or no calibration</li>
@@ -103,7 +103,8 @@
     <div style="float: right" class="sidebar">
       <h3>News Archive</h3>
       <ul id="archive">
-        <li><a href="../../2012/01">January 2012 (2)</a></li>
+        <li><a href="../../2012/02">February 2012 (1)</a></li>
+<li><a href="../../2012/01">January 2012 (2)</a></li>
 <li><a href="../../2011/12">December 2011 (4)</a></li>
 <li><a href="../../2011/11">November 2011 (5)</a></li>
       </ul>
@@ -301,15 +302,11 @@ $ sudo perl Build.PL
 $ sudo cpan Wx</pre>
         
         <p><b>Note for Ubuntu users:</b> you must first install the <i>build-essential</i>, <i>libgtk2.0-dev</i>
-        <i>libwxgtk2.8-dev</i> and <i>libmodule-build-perl</i> packages. Should you have problems with the 
-        <i>sudo perl Build.PL</i> command, you can replace it with <i>curl -L http://cpanmin.us | perl - --sudo .</i>
+        <i>libwxgtk2.8-dev</i>, <i>libperl-wx</i>, and <i>libmodule-build-perl</i> packages. Should you have problems with the 
+        <i>sudo perl Build.PL</i> command, you can replace it with <i>curl -L http://cpanmin.us | perl - --sudo --installdeps .</i>
         which should work a lot better on some Ubuntu systems having broken CPAN setups.</p>
         
-        <p><b>Note for Mac users:</b> you must first install the <i>Developer Tools</i> (XCode) supplied on your OS X install disk. 
-            If you are on Lion, you have to issue the following commands before running the above ones: <br />
-            <i>export VERSIONER_PERL_VERSION=5.10</i><br />
-            <i>export VERSIONER_PERL_PREFER_32_BIT=yes</i><br />
-            Also, note that the above hint about the <i>cpanmin.us</i> way applies to Mac too.</p>
+        <p><b>Note for Mac (Lion) users:</b> see <a href="https://github.com/alexrj/Slic3r/wiki/Running-Slic3r-from-git-on-OS-X-Lion">this page</a> for instructions.</p>
         
         <p><b>Note for Win users:</b> see <a href="https://github.com/alexrj/Slic3r/wiki/Running-Slic3r-from-git-on-Windows">this page</a> for instructions.</p>
 
