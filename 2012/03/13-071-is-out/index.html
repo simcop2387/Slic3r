@@ -143,36 +143,42 @@
     </div>
     <div style="width: 500px">
       
-<h2 class="post">0.5.2 is out!</h2>
+<h2 class="post">0.7.1 is out!</h2>
 <div class="information">
-   <span class="date">2011-11-26</span>
+   <span class="date">2012-03-11</span>
 </div>
-
-A new release just after two days!
 
 <h4>New features:</h4>
 <ul>
-    <li>new <b>Extrusion width ratio</b> option to force a given
-    ratio between extrusion width and layer height instead of 
-    having Slic3r calculate it automatically</li>
-    <li>new super-fast <b>concentric</b> infill pattern</li>
+    <li>new <b>fan always on</b> option</li>
+    <li><b>bed temperature control</b> (first layer/other layers)</li>
+    <li>Growl support for Mac</li>
 </ul>
 
 <h4>Improvements:</h4>
 <ul>
-    <li>GUI progress bar is not determinate and shows some information</li>
-    <li>avoid unnecessary retractions during infill</li>
+    <li>some algorithms are now less complex (thus faster with larger models)</li>
+    <li>fill/perimeter contact is maximized for line pattern</li>
+    <li>slowdown is now triggered regardless of whether a fan is used</li>
+    <li>allow to use config options in start/end G-code, like for output filename pattern</li>
+    <li>throw an error if a user wants to print a 0mm layer</li>
+    <li>remove M82/M83 codes for Makerbot output</li>
 </ul>
 
 <h4>Changes:</h4>
 <ul>
-    <li><i>Filament packing density</i> was renamed to <i>Extrusion multiplier</i></li>
+    <li>the <i>Use relative E</i> option is now back in the GUI</li>
+    <li>remove G0 from the GUI until most firmwares implement it</li>
+    <li>avoid G92 codes for Mach3 output</li>
 </ul>
 
 <h4>Bugfixes:</h4>
 <ul>
-    <li><i>Infill every 'n' layers</i> was broken after recent changes</li>
-    <li>setting <i>Temperature</i> to zero didn't remove it from output</li>
+    <li>retraction wasn't triggered when moving between copies</li>
+    <li>a bad "bridge fan end" string was sometimes inserted in G-code</li>
+    <li>fixed some fatal errors</li>
+    <li>fixed some bogus non-manifold errors happening with certain values of first layer height</li>
+    <li>infill extrudates were escaping perimeters sometimes</li>
 </ul>
 
       <div style="clear: both"></div>

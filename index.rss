@@ -6,6 +6,46 @@
   <description>STL-to-GCODE translator for RepRap printers</description>
   <generator>BlazeBlogger 1.2.0</generator>
   <item>
+    <title>0.7.1 is out!</title>
+    <link>http://slic3r.org/blog/2012/03/13-071-is-out/</link>
+    <guid>http://slic3r.org/blog/2012/03/13-071-is-out/</guid>
+    <pubDate>Sun, 11 Mar 2012 00:00:01 GMT</pubDate>
+    <description><![CDATA[
+<h4>New features:</h4>
+<ul>
+    <li>new <b>fan always on</b> option</li>
+    <li><b>bed temperature control</b> (first layer/other layers)</li>
+    <li>Growl support for Mac</li>
+</ul>
+
+<h4>Improvements:</h4>
+<ul>
+    <li>some algorithms are now less complex (thus faster with larger models)</li>
+    <li>fill/perimeter contact is maximized for line pattern</li>
+    <li>slowdown is now triggered regardless of whether a fan is used</li>
+    <li>allow to use config options in start/end G-code, like for output filename pattern</li>
+    <li>throw an error if a user wants to print a 0mm layer</li>
+    <li>remove M82/M83 codes for Makerbot output</li>
+</ul>
+
+<h4>Changes:</h4>
+<ul>
+    <li>the <i>Use relative E</i> option is now back in the GUI</li>
+    <li>remove G0 from the GUI until most firmwares implement it</li>
+    <li>avoid G92 codes for Mach3 output</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>retraction wasn't triggered when moving between copies</li>
+    <li>a bad "bridge fan end" string was sometimes inserted in G-code</li>
+    <li>fixed some fatal errors</li>
+    <li>fixed some bogus non-manifold errors happening with certain values of first layer height</li>
+    <li>infill extrudates were escaping perimeters sometimes</li>
+</ul>
+    ]]></description>
+  </item>
+  <item>
     <title>Slic3r 0.7.0 is out!</title>
     <link>http://slic3r.org/blog/2012/02/12-slic3r-070-is-out/</link>
     <guid>http://slic3r.org/blog/2012/02/12-slic3r-070-is-out/</guid>
@@ -300,42 +340,6 @@ A new release just after two days!
 <ul>
     <li><i>Infill every 'n' layers</i> was broken after recent changes</li>
     <li>setting <i>Temperature</i> to zero didn't remove it from output</li>
-</ul>
-    ]]></description>
-  </item>
-  <item>
-    <title>0.5.1 is out!</title>
-    <link>http://slic3r.org/blog/2011/11/3-051-is-out/</link>
-    <guid>http://slic3r.org/blog/2011/11/3-051-is-out/</guid>
-    <pubDate>Thu, 24 Nov 2011 00:00:01 GMT</pubDate>
-    <description><![CDATA[
-10 more days and a new release is there!
-
-<h4>New features:</h4>
-<ul>
-    <li>if <i>Temperature</i> is set to zero, no temperature control will
-    be added to the resulting gcode file</li>
-</ul>
-
-<h4>Improvements:</h4>
-<ul>
-    <li><b>large refactoring</b> of the bridging logic - all bridges should now be detected (although some work needs to be done on optimal infill direction); the quality of solid surfaces and regions near bridges and solid surfaces has improved a lot</li>
-    <li>use solid infill under pillars and small regions instead of
-    using an internal low-density infill</li>
-    <li>don't die on non-manifold models; always try to generate some output</li>
-</ul>
-
-<h4>Changes:</h4>
-<ul>
-    <li>print settings moved to first tab</li>
-    <li>M109 is used instead of M104 for temperature control</li>
-</ul>
-
-<h4>Bugfixes:</h4>
-<ul>
-    <li>bottom layer speed was ignored</li>
-    <li>some solid layers were skipped</li>
-    <li>some ghost lines were extruded in open air outside the object when a 45° infill angle was used</li>
 </ul>
     ]]></description>
   </item>

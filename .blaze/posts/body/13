@@ -1,0 +1,33 @@
+
+<h4>New features:</h4>
+<ul>
+    <li>new <b>fan always on</b> option</li>
+    <li><b>bed temperature control</b> (first layer/other layers)</li>
+    <li>Growl support for Mac</li>
+</ul>
+
+<h4>Improvements:</h4>
+<ul>
+    <li>some algorithms are now less complex (thus faster with larger models)</li>
+    <li>fill/perimeter contact is maximized for line pattern</li>
+    <li>slowdown is now triggered regardless of whether a fan is used</li>
+    <li>allow to use config options in start/end G-code, like for output filename pattern</li>
+    <li>throw an error if a user wants to print a 0mm layer</li>
+    <li>remove M82/M83 codes for Makerbot output</li>
+</ul>
+
+<h4>Changes:</h4>
+<ul>
+    <li>the <i>Use relative E</i> option is now back in the GUI</li>
+    <li>remove G0 from the GUI until most firmwares implement it</li>
+    <li>avoid G92 codes for Mach3 output</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>retraction wasn't triggered when moving between copies</li>
+    <li>a bad "bridge fan end" string was sometimes inserted in G-code</li>
+    <li>fixed some fatal errors</li>
+    <li>fixed some bogus non-manifold errors happening with certain values of first layer height</li>
+    <li>infill extrudates were escaping perimeters sometimes</li>
+</ul>
