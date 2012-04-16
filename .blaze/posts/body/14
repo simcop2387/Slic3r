@@ -1,0 +1,46 @@
+
+We have a shiny new beautiful icon now! Thanks to <a href="http://www.relativedesign.us/">Corey Daniels</a> for designing it.
+
+<h4>Major new features:</h4>
+<ul>
+    <li><b>Honeycomb (hexagonal) infill pattern!</b></li>
+    <li><b>SVG export</b> for DLP printers and other purposes</li>
+    <li><b>automatic arrangement</b> for printing multiple copies of the same object (thanks Triffid Hunter for contributing this one)</li>
+</ul>
+
+<h4>New features:</h4>
+<ul>
+    <li>new <b>Reslice</b> command in the File menu</li>
+    <li>customizable G-code to be executed at layer change</li>
+</ul>
+
+<h4>Improvements:</h4>
+<ul>
+    <li>huge <b>speed boost (20%-50%)</b> and more parallelization of long-running algorithms</li>
+    <li>new implementation of <b>support material</b> generation</li>
+    <li>don't slow down travel moves when cooling is enabled</li>
+    <li>new <i>--threads</i> command line option to set number of parallel jobs</li>
+</ul>
+
+<h4>Minor improvements:</h4>
+<ul>
+    <li>enable G0 automatically for Mach3</li>
+    <li>allow decimal values for skirt/duplicate distances and speeds</li>
+    <li>added the coordinates of the first non-manifold edge to the warning messages</li>
+    <li>only output M109 if there's none in the user-supplied start G-code</li>
+    <li>make sure all concentric fill loops are extruded in the same direction to prevent sudden changes of direction</li>
+</ul>
+
+<h4>Changes:</h4>
+<ul>
+    <li><i>--duplicate-x</i> and <i>--duplicate-y</i> were merged into a single <i>--duplicate-grid</i> option</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>some holes were filled</li>
+    <li>the <i>No Extrusion</i> mode had no effect</li>
+    <li>use M109 for bed control (Makerbot)</li>
+    <li>use P instead of S for M106 (Mach3)</li>
+    <li>fixed some fatal errors</li>
+</ul>

@@ -6,6 +6,59 @@
   <description>STL-to-GCODE translator for RepRap printers</description>
   <generator>BlazeBlogger 1.2.0</generator>
   <item>
+    <title>0.7.2 is out!</title>
+    <link>http://slic3r.org/blog/2012/04/14-072-is-out/</link>
+    <guid>http://slic3r.org/blog/2012/04/14-072-is-out/</guid>
+    <pubDate>Mon, 16 Apr 2012 00:00:01 GMT</pubDate>
+    <description><![CDATA[
+We have a shiny new beautiful icon now! Thanks to <a href="http://www.relativedesign.us/">Corey Daniels</a> for designing it.
+
+<h4>Major new features:</h4>
+<ul>
+    <li><b>Honeycomb (hexagonal) infill pattern!</b></li>
+    <li><b>SVG export</b> for DLP printers and other purposes</li>
+    <li><b>automatic arrangement</b> for printing multiple copies of the same object (thanks Triffid Hunter for contributing this one)</li>
+</ul>
+
+<h4>New features:</h4>
+<ul>
+    <li>new <b>Reslice</b> command in the File menu</li>
+    <li>customizable G-code to be executed at layer change</li>
+</ul>
+
+<h4>Improvements:</h4>
+<ul>
+    <li>huge <b>speed boost (20%-50%)</b> and more parallelization of long-running algorithms</li>
+    <li>new implementation of <b>support material</b> generation</li>
+    <li>don't slow down travel moves when cooling is enabled</li>
+    <li>new <i>--threads</i> command line option to set number of parallel jobs</li>
+</ul>
+
+<h4>Minor improvements:</h4>
+<ul>
+    <li>enable G0 automatically for Mach3</li>
+    <li>allow decimal values for skirt/duplicate distances and speeds</li>
+    <li>added the coordinates of the first non-manifold edge to the warning messages</li>
+    <li>only output M109 if there's none in the user-supplied start G-code</li>
+    <li>make sure all concentric fill loops are extruded in the same direction to prevent sudden changes of direction</li>
+</ul>
+
+<h4>Changes:</h4>
+<ul>
+    <li><i>--duplicate-x</i> and <i>--duplicate-y</i> were merged into a single <i>--duplicate-grid</i> option</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>some holes were filled</li>
+    <li>the <i>No Extrusion</i> mode had no effect</li>
+    <li>use M109 for bed control (Makerbot)</li>
+    <li>use P instead of S for M106 (Mach3)</li>
+    <li>fixed some fatal errors</li>
+</ul>
+    ]]></description>
+  </item>
+  <item>
     <title>0.7.1 is out!</title>
     <link>http://slic3r.org/blog/2012/03/13-071-is-out/</link>
     <guid>http://slic3r.org/blog/2012/03/13-071-is-out/</guid>
@@ -306,40 +359,6 @@ A new juicy release is ready!
     <li>options having zero values were broken 0.5.2</li>
     <li>hollow objects were printed with wrong sparse infill</li>
     <li>minor errors</li>
-</ul>
-    ]]></description>
-  </item>
-  <item>
-    <title>0.5.2 is out!</title>
-    <link>http://slic3r.org/blog/2011/11/4-052-is-out/</link>
-    <guid>http://slic3r.org/blog/2011/11/4-052-is-out/</guid>
-    <pubDate>Sat, 26 Nov 2011 00:00:01 GMT</pubDate>
-    <description><![CDATA[
-A new release just after two days!
-
-<h4>New features:</h4>
-<ul>
-    <li>new <b>Extrusion width ratio</b> option to force a given
-    ratio between extrusion width and layer height instead of 
-    having Slic3r calculate it automatically</li>
-    <li>new super-fast <b>concentric</b> infill pattern</li>
-</ul>
-
-<h4>Improvements:</h4>
-<ul>
-    <li>GUI progress bar is not determinate and shows some information</li>
-    <li>avoid unnecessary retractions during infill</li>
-</ul>
-
-<h4>Changes:</h4>
-<ul>
-    <li><i>Filament packing density</i> was renamed to <i>Extrusion multiplier</i></li>
-</ul>
-
-<h4>Bugfixes:</h4>
-<ul>
-    <li><i>Infill every 'n' layers</i> was broken after recent changes</li>
-    <li>setting <i>Temperature</i> to zero didn't remove it from output</li>
 </ul>
     ]]></description>
   </item>
