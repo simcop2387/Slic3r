@@ -6,6 +6,14 @@
   <description>STL-to-GCODE translator for RepRap printers</description>
   <generator>BlazeBlogger 1.2.0</generator>
   <item>
+    <title>Slic3r 0.7.2b is out!</title>
+    <link>http://slic3r.org/blog/2012/04/15-slic3r-072b-is-out/</link>
+    <guid>http://slic3r.org/blog/2012/04/15-slic3r-072b-is-out/</guid>
+    <pubDate>Tue, 17 Apr 2012 00:00:01 GMT</pubDate>
+    <description><![CDATA[
+Due to an error slipped in the 0.7.2 release and quickly reported by early downloaders, I recommend to download the newly-released 0.7.2b now. Sorry!    ]]></description>
+  </item>
+  <item>
     <title>0.7.2 is out!</title>
     <link>http://slic3r.org/blog/2012/04/14-072-is-out/</link>
     <guid>http://slic3r.org/blog/2012/04/14-072-is-out/</guid>
@@ -345,20 +353,6 @@ A new juicy release is ready!
     <li>the <i>extrusion width ratio</i> setting produced wrong flow rate sometimes</li>
     <li>removed sparse errors</li>
     <li>could not read back a config file with empty start or end gcode</li>
-</ul>
-    ]]></description>
-  </item>
-  <item>
-    <title>0.5.3 is out!</title>
-    <link>http://slic3r.org/blog/2011/11/5-053-is-out/</link>
-    <guid>http://slic3r.org/blog/2011/11/5-053-is-out/</guid>
-    <pubDate>Sun, 27 Nov 2011 00:00:01 GMT</pubDate>
-    <description><![CDATA[
-<h4>Bugfixes:</h4>
-<ul>
-    <li>options having zero values were broken 0.5.2</li>
-    <li>hollow objects were printed with wrong sparse infill</li>
-    <li>minor errors</li>
 </ul>
     ]]></description>
   </item>
