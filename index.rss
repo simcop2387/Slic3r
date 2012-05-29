@@ -6,6 +6,14 @@
   <description>STL-to-GCODE translator for RepRap printers</description>
   <generator>BlazeBlogger 1.2.0</generator>
   <item>
+    <title>Slic3r 0.8.2 is out!</title>
+    <link>http://slic3r.org/blog/2012/05/17-slic3r-082-is-out/</link>
+    <guid>http://slic3r.org/blog/2012/05/17-slic3r-082-is-out/</guid>
+    <pubDate>Tue, 29 May 2012 00:00:01 GMT</pubDate>
+    <description><![CDATA[
+Due to an ugly bug slipped in the previous release, a quick replacement is out.    ]]></description>
+  </item>
+  <item>
     <title>Slic3r 0.8.1 is out!</title>
     <link>http://slic3r.org/blog/2012/05/16-slic3r-081-is-out/</link>
     <guid>http://slic3r.org/blog/2012/05/16-slic3r-081-is-out/</guid>
@@ -336,32 +344,6 @@ http://captain-slow.dk/2011/12/29/slic3r-fill-options/">some screenshots</a> to 
     <li>Fixed bolding and font issues on Windows</li>
     <li>Removed fatal error when nothing in a single layer could be parsed</li>
     <li>Duplicate was giving bad number of copies</li>
-</ul>
-    ]]></description>
-  </item>
-  <item>
-    <title>0.5.5b is out!</title>
-    <link>http://slic3r.org/blog/2011/12/7-055b-is-out/</link>
-    <guid>http://slic3r.org/blog/2011/12/7-055b-is-out/</guid>
-    <pubDate>Mon, 05 Dec 2011 00:00:01 GMT</pubDate>
-    <description><![CDATA[
-<h4>New features:</h4>
-<ul>
-    <li>optimal bridging direction is detected for more bridges</li>
-    <li>flow width is auto adjusted to avoid leaving gaps at the border of solid regions</li>
-    <li>customizable speed for small perimeters</li>
-    <li>customizable multiplier for the flow rate used when bridging</li>
-</ul>
-
-<h4>Improvements:</h4>
-<ul>
-    <li>important settings are marked in bold -- new users can start printing by  changing only those ones</li>
-    <li>infill segments are now connected to allow better sticking to the perimeters</li>
-</ul>
-
-<h4>Bugfixes:</h4>
-<ul>
-    <li>0.5.4 was less tolerant than 0.5.3 about dirty STL models</li>
 </ul>
     ]]></description>
   </item>

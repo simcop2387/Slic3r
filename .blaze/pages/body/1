@@ -3,7 +3,7 @@
 
 <p>Slic3r is a <b>one-man job</b>. I started this project in mid-September and it's already being widely used and appreciated. I spent much time on development: more or less a <b>couple months working full-time</b>. I'm a freelance developer, and reserving time for such a project has costs for me.</p>
 
-<p><a href="http://www.ohloh.net/p/slic3r/estimated_cost">Ohloh estimates</a>  the total cost of having developed Slic3r so far (although this has to be taken with a pinch of salt) at <b>nearly $57k</b>. This is probably too much, but you get the idea. I could have kept the code closed and started selling licenses, but I decided to <b>share my work</b> with the community.</p>
+<p><a href="http://www.ohloh.net/p/slic3r/estimated_cost">Ohloh estimates</a>  the total cost of having developed Slic3r so far (although this has to be taken with a pinch of salt) at <b>nearly $96k</b>, with an estimated effort of 2 year/man. This is probably too much, but you get the idea. I could have kept the code closed and started selling licenses, but I decided to <b>share my work</b> with the community.</p>
 
 <p>In the RepRap community, many people cover their costs by selling hardware. They honor the free software licenses, by publishing their designs, but they can also sell material things (kits, printed parts, hotends, heated beds, electronics etc.) to fund and continue their research. Software developers... well, they can't sell anything :-)</p>
 
@@ -103,7 +103,29 @@
     <li>Pascal Bettingers</li>
     <li>Giulia Vianello</li>
     <li>Michael Freeman <a href="http://mikes-models.com/">mikes-models.com</a></li>
-    
+    <li>Christopher Muncy</li>
+    <li>Andrew Barton</li>
+    <li>Travis Howse</li>
+    <li>Johannes Heberlein</li>
+    <li>Maik Stohn</li>
+    <li>Hugh Lyman</li>
+    <li>Torben Kinnert</li>
+    <li>Enrico Paccagnella</li>
+    <li>Mick Balaban</li>
+    <li>General and Electronics Merchandise Supply and Distribution</li>
+    <li>Bruce Rohde</li>
+    <li>Roberto Previdi</li>
+    <li>Sonia Margulis</li>
+    <li>Adam Herring</li>
+    <li>David Bue Pedersen</li>
+    <li>Thomas Dawson</li>
+    <li>Jochem Van De Pol</li>
+    <li>Eric Connolly</li>
+    <li>ProtoParadigm LLC</li>
+    <li>David Hoza</li>
+    <li>Tim Parth</li>
+    <li>Christoph Albiez</li>
+    <li>Mark Hindess</li>
 </ul>
 
 <p>If your name is not listed, please excuse me and feel free to send a heads-up e-mail.</p>
