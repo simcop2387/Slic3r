@@ -145,29 +145,52 @@
     </div>
     <div style="width: 500px">
       
-<h2 class="post">Here and there in the Slic3r community</h2>
+<h2 class="post">Slic3r 0.8.1 is out!</h2>
 <div class="information">
-   <span class="date">2012-01-07</span>
+   <span class="date">2012-05-29</span>
 </div>
 
-<p>Okay, Slic3r was born in September and in a few months I was able to bring it beyond what I expected, in terms of features, speed and stability. Things have started to <b>change very quickly</b>, and <b>community</b> is playing a big role in testing and discussing new features.</p>
+This is a very important update, grab it now and enjoy!
+I want to say thanks to the wonderful community that has been helping with feedback, early testing and nice ideas. A lot of people is involved in our open "quality assurance" process!
 
-<p>A <a href="http://forums.reprap.org/list.php?263"><b>Slic3r forum</b></a> was created in the official RepRap forums. Also, about 50 people sit in the <a href="http://webchat.freenode.net/">FreeNode</a> IRC #slic3r channel.</p>
+<h4>New features:</h4>
+<ul>
+    <li><b>graphical interface for composing multiple objects</b> in one single print (with tools for rotation, scaling etc.)</li>
+    <li>new <b>--merge</b> switch to compose multiple object with auto-positioning from command line</li>
+    <li>new option to <b>randomize starting points</b> across layers</li>
+    <li>automatic detection of additional required perimeters for avoiding haps in domed/sloping objects (the <i>perimeters</i> settings means now <i>minimum perimeters</i> as Slic3r could add more when needed)</li>
+    <li><b>sequential printing</b>: print a complete object, then move onto next one, with automatic collision detection</li>
+    <li>ability to <b>export STL</b> files of composed plates, as well as a <b>Split</b> command to turn multi-object files into individual objects</li>
+    <li>we can read <b>OBJ</b> files now</li>
+</ul>
 
-<p>Some notable things appeared in the web recently. Neil Underwood (well known as <a href="http://repraplogphase.blogspot.com/">Spacexula</a>) posted pictures and a video of a print he did on the <a href="http://blog.reprap.org/2011/12/001-layer-height-on-prusa-mendel.html">official RepRap blog</a>. The first outstanding thing is that he reached a <b>0.01mm layer height</b>. The second outstanding thing is that <b>he used Slic3r</b>!</p>
+<h4>Improvements:</h4>
+<ul>
+    <li><b>very large memory savings</b> and speed boosts, allowing to process high-resolutions files without getting out of memory; also, the number of threads is customizable</li>
+    <li>very <b>improved surface quality</b> due to new smoothing algorithms</li>
+    <li>the GUI doesn't block while slicing and a <b>Cancel</b> button was added to stop the process</li>
+    <li>hole perimeters are extruded in reverse order (from the outermost to the innermost) to get better overhangs</li>
+    <li>a slight compensation is applied to avoid small hole shrinkage</li>
+    <li>support material now uses honeycomb pattern (much work is still needed on support material)</li>
+    <li>retract before changing tool for dual extrusion</li>
+</ul>
 
-<p>Richard H. (well known as <a href="http://richrap.blogspot.com/">Richrap</a>) is posting a multipart <a href="http://richrap.blogspot.com/2012/01/slic3r-is-nicer-part-1-settings-and.html"><b>illustrated Slic3r guide</b></a> to his colorful blog. It's a very good work, so thank you Rich!</p>
+<h4>Changes:</h4>
+<ul>
+    <li>SVG colors were inverted to better support DLP printing (next versions will carry more settings for SVG export)</li>
+</ul>
 
-<p>Michael Andresen (well known as <a href="http://captain-slow.dk/">blddk</a>) posted <a href="http://captain-slow.dk/2011/12/29/slic3r-fill-options/
-http://captain-slow.dk/2011/12/29/slic3r-fill-options/">some screenshots</a> to show differences between the various <b>fill patterns</b> available in Slic3r. Don't miss the interesting article Gary Hodgson posted about <a href="http://garyhodgson.com/reprap/2012/01/thoughts-on-fill-algorithms/">new possible fill patterns</a>.</p>
-
-<p><a href="http://techpaladin.com/">Pointedstick</a> (Nathaniel Graham) posted two good blog articles about <b>high-resolution printing</b>, in which he talks about using Slic3r: <a href="http://techpaladin.com/2011/11/21/getting-all-the-pieces-to-fit-together/">this</a> and <a href="http://techpaladin.com/2011/12/21/nathaniels-guide-to-high-detail-printing/">that</a>.</p>
-
-<p><a href="http://brazenartifice.wordpress.com/">Brazen Artifice</a> posted a couple articles about <a href="http://brazenartifice.wordpress.com/2011/12/31/retraction-solution-with-marlin-pronterface-and-slic3r/">retraction</a> and <a href="http://brazenartifice.wordpress.com/2011/12/05/teaching-slic3r-to-remember-your-settings/">preloading last settings</a>.
-
-<p>Sparr posted a picture of an <a href="http://blog.freesideatlanta.org/2011/12/reprap-firmware-comparison-smoother.html">object he printed</a> with and without enabling the <b>native arcs support</b> in Slic3r.</p>
-
-<p>The good <a href="https://github.com/kliment">Kliment Yanev</a> added an option to customize the slicing command in his excellent <a href="https://github.com/kliment/Printrun">Pronterface</a>, to allow for easy <b>integration with Slic3r</b>. (See the <a href="https://github.com/alexrj/Slic3r/blob/master/README.markdown">Slic3r README</a> for guidance.)</p>
+<h4>Bugfixes:</h4>
+<ul>
+    <li>fixed some GUI memory leaks</li>
+    <li>fixed some fatal errors</li>
+    <li>fixed a bug causing high memory consumption when infilling every 2 or more layers</li>
+    <li>some holes where filled</li>
+    <li>some nearly-thin walls were discarded</li>
+    <li>removed tiny dots/blobs that were generated sometimes</li>
+    <li>bottom layer speed ratio wasn't taken into account when estimating layer time</li>
+    <li>omit any G92 E0 when in relative mode</li>
+</ul>
 
       <div style="clear: both"></div>
     </div>
