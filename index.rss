@@ -6,6 +6,55 @@
   <description>STL-to-GCODE translator for RepRap printers</description>
   <generator>BlazeBlogger 1.2.0</generator>
   <item>
+    <title>Slic3r 0.8.0 is out!</title>
+    <link>http://slic3r.org/blog/2012/05/16-slic3r-080-is-out/</link>
+    <guid>http://slic3r.org/blog/2012/05/16-slic3r-080-is-out/</guid>
+    <pubDate>Tue, 29 May 2012 00:00:01 GMT</pubDate>
+    <description><![CDATA[
+This is a very important update, grab it now and enjoy!
+I want to say thanks to the wonderful community that has been helping with feedback, early testing and nice ideas. A lot of people is involved in our open "quality assurance" process!
+
+<h4>New features:</h4>
+<ul>
+    <li><b>graphical interface for composing multiple objects</b> in one single print (with tools for rotation, scaling etc.)</li>
+    <li>new <b>--merge</b> switch to compose multiple object with auto-positioning from command line</li>
+    <li>new option to <b>randomize starting points</b> across layers</li>
+    <li>automatic detection of additional required perimeters for avoiding haps in domed/sloping objects (the <i>perimeters</i> settings means now <i>minimum perimeters</i> as Slic3r could add more when needed)</li>
+    <li><b>sequential printing</b>: print a complete object, then move onto next one, with automatic collision detection</li>
+    <li>ability to <b>export STL</b> files of composed plates, as well as a <b>Split</b> command to turn multi-object files into individual objects</li>
+    <li>we can read <b>OBJ</b> files now</li>
+</ul>
+
+<h4>Improvements:</h4>
+<ul>
+    <li><b>very large memory savings</b> and speed boosts, allowing to process high-resolutions files without getting out of memory; also, the number of threads is customizable</li>
+    <li>very <b>improved surface quality</b> due to new smoothing algorithms</li>
+    <li>the GUI doesn't block while slicing and a <b>Cancel</b> button was added to stop the process</li>
+    <li>hole perimeters are extruded in reverse order (from the outermost to the innermost) to get better overhangs</li>
+    <li>a slight compensation is applied to avoid small hole shrinkage</li>
+    <li>support material now uses honeycomb pattern (much work is still needed on support material)</li>
+    <li>retract before changing tool for dual extrusion</li>
+</ul>
+
+<h4>Changes:</h4>
+<ul>
+    <li>SVG colors were inverted to better support DLP printing (next versions will carry more settings for SVG export)</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>fixed some GUI memory leaks</li>
+    <li>fixed some fatal errors</li>
+    <li>fixed a bug causing high memory consumption when infilling every 2 or more layers</li>
+    <li>some holes where filled</li>
+    <li>some nearly-thin walls were discarded</li>
+    <li>removed tiny dots/blobs that were generated sometimes</li>
+    <li>bottom layer speed ratio wasn't taken into account when estimating layer time</li>
+    <li>omit any G92 E0 when in relative mode</li>
+</ul>
+    ]]></description>
+  </item>
+  <item>
     <title>Slic3r 0.7.2b is out!</title>
     <link>http://slic3r.org/blog/2012/04/15-slic3r-072b-is-out/</link>
     <guid>http://slic3r.org/blog/2012/04/15-slic3r-072b-is-out/</guid>
@@ -313,46 +362,6 @@ http://captain-slow.dk/2011/12/29/slic3r-fill-options/">some screenshots</a> to 
 <h4>Bugfixes:</h4>
 <ul>
     <li>0.5.4 was less tolerant than 0.5.3 about dirty STL models</li>
-</ul>
-    ]]></description>
-  </item>
-  <item>
-    <title>0.5.4 is out!</title>
-    <link>http://slic3r.org/blog/2011/12/6-054-is-out/</link>
-    <guid>http://slic3r.org/blog/2011/12/6-054-is-out/</guid>
-    <pubDate>Thu, 01 Dec 2011 00:00:01 GMT</pubDate>
-    <description><![CDATA[
-A new juicy release is ready!
-
-<h4>New features:</h4>
-<ul>
-    <li>distinct speeds for perimeters, infill, solid infill and bridges</li>
-    <li>warn about non-manifold or dirty models</li>
-    <li>allow solid fill layers to be zero</li>
-    <li>new <i>--extrusion-axis</i> option</li>
-</ul>
-
-<h4>Improvements:</h4>
-<ul>
-    <li>high tolerance for dirty models; it will attempt to repair any missing layer (all Prusa Mendel parts now slice correctly!)</li>
-    <li>options on command line now override loaded config file</li>
-    <li>note used settings in exported gcode</li>
-</ul>
-
-<h4>Changes:</h4>
-<ul>
-    <li>all <i>feed rate</i> options were renamed using the word <i>speed</i></li>
-</ul>
-
-<h4>Bugfixes:</h4>
-<ul>
-    <li>concentric infill threw errors</li>
-    <li>plate was lifted erroneously at Z change</li>
-    <li>fill density = 0 prevented generation of extra solid layers</li>
-    <li>some bridges, when very close to other solid surfaces, could lead to       overlapping infill</li>
-    <li>the <i>extrusion width ratio</i> setting produced wrong flow rate sometimes</li>
-    <li>removed sparse errors</li>
-    <li>could not read back a config file with empty start or end gcode</li>
 </ul>
     ]]></description>
   </item>

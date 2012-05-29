@@ -6,9 +6,9 @@
   <meta name="Copyright" content="&copy; 2012 Alessandro Ranellucci">
   <meta name="Date" content="Tue May 29 14:36:56 2012">
   <meta name="Description" content="STL-to-GCODE translator for RepRap printers">
-  <meta name="Keywords" content="Archive for March 2012, reprap,3D print,prusa,prusa mendel,skeinforge">
-  <link rel="stylesheet" href="../../default.css" type="text/css">
-  <link rel="alternate" href="../../index.rss" title="RSS Feed" type="application/rss+xml">
+  <meta name="Keywords" content="reprap,3D print,prusa,prusa mendel,skeinforge">
+  <link rel="stylesheet" href="../../../default.css" type="text/css">
+  <link rel="alternate" href="../../../index.rss" title="RSS Feed" type="application/rss+xml">
   <title>Slic3r - a STL-to-GCODE translator for RepRap 3D printers</title>
 <style type="text/css">
     body {
@@ -104,13 +104,13 @@
     <div style="float: right" class="sidebar">
       <h3>News Archive</h3>
       <ul id="archive">
-        <li><a href="../../2012/05">May 2012 (1)</a></li>
-<li><a href="../../2012/04">April 2012 (2)</a></li>
-<li><a href="../../2012/03">March 2012 (1)</a></li>
-<li><a href="../../2012/02">February 2012 (1)</a></li>
-<li><a href="../../2012/01">January 2012 (2)</a></li>
-<li><a href="../../2011/12">December 2011 (4)</a></li>
-<li><a href="../../2011/11">November 2011 (5)</a></li>
+        <li><a href="../../../2012/05">May 2012 (1)</a></li>
+<li><a href="../../../2012/04">April 2012 (2)</a></li>
+<li><a href="../../../2012/03">March 2012 (1)</a></li>
+<li><a href="../../../2012/02">February 2012 (1)</a></li>
+<li><a href="../../../2012/01">January 2012 (2)</a></li>
+<li><a href="../../../2011/12">December 2011 (4)</a></li>
+<li><a href="../../../2011/11">November 2011 (5)</a></li>
       </ul>
       
       <h3>Donations</h3>
@@ -144,44 +144,52 @@
       
     </div>
     <div style="width: 500px">
-      <div class="section">Archive for March 2012</div>
-
-<h2 class="post"><a href="../../2012/03/13-071-is-out" rel="permalink">0.7.1 is out!</a></h2>
+      
+<h2 class="post">Slic3r 0.8.0 is out!</h2>
 <div class="information">
-   <span class="date">2012-03-11</span>
+   <span class="date">2012-05-29</span>
 </div>
+
+This is a very important update, grab it now and enjoy!
+I want to say thanks to the wonderful community that has been helping with feedback, early testing and nice ideas. A lot of people is involved in our open "quality assurance" process!
 
 <h4>New features:</h4>
 <ul>
-    <li>new <b>fan always on</b> option</li>
-    <li><b>bed temperature control</b> (first layer/other layers)</li>
-    <li>Growl notifications</li>
+    <li><b>graphical interface for composing multiple objects</b> in one single print (with tools for rotation, scaling etc.)</li>
+    <li>new <b>--merge</b> switch to compose multiple object with auto-positioning from command line</li>
+    <li>new option to <b>randomize starting points</b> across layers</li>
+    <li>automatic detection of additional required perimeters for avoiding haps in domed/sloping objects (the <i>perimeters</i> settings means now <i>minimum perimeters</i> as Slic3r could add more when needed)</li>
+    <li><b>sequential printing</b>: print a complete object, then move onto next one, with automatic collision detection</li>
+    <li>ability to <b>export STL</b> files of composed plates, as well as a <b>Split</b> command to turn multi-object files into individual objects</li>
+    <li>we can read <b>OBJ</b> files now</li>
 </ul>
 
 <h4>Improvements:</h4>
 <ul>
-    <li>some algorithms are now less complex (thus faster with larger models)</li>
-    <li>fill/perimeter contact is maximized for line pattern</li>
-    <li>slowdown is now triggered regardless of whether a fan is used</li>
-    <li>allow to use config options in start/end G-code, like for output filename pattern</li>
-    <li>throw an error if a user wants to print a 0mm layer</li>
-    <li>remove M82/M83 codes for Makerbot output</li>
+    <li><b>very large memory savings</b> and speed boosts, allowing to process high-resolutions files without getting out of memory; also, the number of threads is customizable</li>
+    <li>very <b>improved surface quality</b> due to new smoothing algorithms</li>
+    <li>the GUI doesn't block while slicing and a <b>Cancel</b> button was added to stop the process</li>
+    <li>hole perimeters are extruded in reverse order (from the outermost to the innermost) to get better overhangs</li>
+    <li>a slight compensation is applied to avoid small hole shrinkage</li>
+    <li>support material now uses honeycomb pattern (much work is still needed on support material)</li>
+    <li>retract before changing tool for dual extrusion</li>
 </ul>
 
 <h4>Changes:</h4>
 <ul>
-    <li>the <i>Use relative E</i> option is now back in the GUI</li>
-    <li>remove G0 from the GUI until most firmwares implement it</li>
-    <li>avoid G92 codes for Mach3 output</li>
+    <li>SVG colors were inverted to better support DLP printing (next versions will carry more settings for SVG export)</li>
 </ul>
 
 <h4>Bugfixes:</h4>
 <ul>
-    <li>retraction wasn't triggered when moving between copies</li>
-    <li>a bad "bridge fan end" string was sometimes inserted in G-code</li>
+    <li>fixed some GUI memory leaks</li>
     <li>fixed some fatal errors</li>
-    <li>fixed some bogus non-manifold errors happening with certain values of first layer height</li>
-    <li>infill extrudates were escaping perimeters sometimes</li>
+    <li>fixed a bug causing high memory consumption when infilling every 2 or more layers</li>
+    <li>some holes where filled</li>
+    <li>some nearly-thin walls were discarded</li>
+    <li>removed tiny dots/blobs that were generated sometimes</li>
+    <li>bottom layer speed ratio wasn't taken into account when estimating layer time</li>
+    <li>omit any G92 E0 when in relative mode</li>
 </ul>
 
       <div style="clear: both"></div>
