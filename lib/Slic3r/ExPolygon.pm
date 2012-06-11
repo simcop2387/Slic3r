@@ -5,8 +5,9 @@ use warnings;
 # an ExPolygon is a polygon with holes
 
 use Boost::Geometry::Utils;
+use List::Util qw(first);
 use Math::Geometry::Voronoi;
-use Slic3r::Geometry qw(X Y A B point_in_polygon same_line);
+use Slic3r::Geometry qw(X Y A B scale epsilon point_in_polygon same_line line_length);
 use Slic3r::Geometry::Clipper qw(union_ex JT_MITER);
 
 # the constructor accepts an array of polygons 
@@ -95,8 +96,9 @@ sub encloses_point {
     my $self = shift;
     my ($point) = @_;
     return $self->contour->encloses_point($point)
-        && (!grep($_->encloses_point($point), $self->holes)
-            || grep($_->point_on_segment($point), $self->holes));
+        && (!(first { $_->encloses_point($point) } $self->holes)
+            || (first { $_->point_on_segment($point) } $self->holes))
+        ? 1 : 0;
 }
 
 # A version of encloses_point for use when hole borders do not matter.
@@ -110,10 +112,14 @@ sub encloses_point_quick {
 
 sub encloses_line {
     my $self = shift;
-    my ($line) = @_;
-    
+    my ($line, $tolerance) = @_;
     my $clip = $self->clip_line($line);
-    return @$clip == 1 && same_line($clip->[0], $line);
+    if (!defined $tolerance) {
+        # optimization
+        return @$clip == 1 && same_line($clip->[0], $line);
+    } else {
+        return @$clip == 1 && abs(line_length($clip->[0]) - $line->length) < $tolerance;
+    }
 }
 
 sub point_on_segment {
@@ -155,16 +161,19 @@ sub clip_line {
 sub simplify {
     my $self = shift;
     $_->simplify(@_) for @$self;
+    return $self;
 }
 
 sub translate {
     my $self = shift;
     $_->translate(@_) for @$self;
+    return $self;
 }
 
 sub rotate {
     my $self = shift;
     $_->rotate(@_) for @$self;
+    return $self;
 }
 
 sub area {
@@ -291,6 +300,67 @@ sub medial_axis {
     }
     
     return @result;
+}
+
+# based on public-domain code by Darel Rex Finley, 2006
+sub internal_path {
+    my $self = shift;
+    my ($from, $to) = @_;
+    # we assume $from and $to are both inside this ExPolygon
+    # so we won't check this
+    
+    # if there's a straight-line solution, return with it immediately
+    {use XXX; ZZZ $to if @$to > 2;
+        my $straight_line = Slic3r::Line->new($from, $to);
+        return $straight_line if $self->encloses_line($straight_line);
+    }
+    
+    # build a point list that refers to the corners of the polygons, 
+    # as well as to the startpoint and endpoint
+    my @pointlist = ($from, (map @$_, @$self), $to);
+    my @pointdist = ();
+    my @pointprev = ();
+    
+    # initialize the shortest-path tree to include just the startpoint
+    my $treecount = 1;
+    
+    # iteratively grow the shortest-path tree until it reaches the endpoint
+    # -- or until it becomes unable to grow, in which case exit with failure
+    my $bestJ = 0;
+    my ($bestI, $bestDist);
+    while ($bestJ < $#pointlist) {
+        $bestDist = undef;
+        for (my $i = 0; $i < $treecount; $i++) {
+            for (my $j = $treecount; $j < @pointlist; $j++) {
+                my $line = Slic3r::Line->new($pointlist[$i], $pointlist[$j]);
+                if ($self->encloses_line($line)) {
+                    my $newDist = ($pointdist[$i] || 0) + $line->length;
+                    if (!defined $bestDist || $newDist < $bestDist) {
+                        $bestDist = $newDist;
+                        $bestI = $i;
+                        $bestJ = $j;
+                    }
+                }
+            }
+        }
+        return undef if !defined $bestDist; # no solution
+        $pointprev[$bestJ] = $bestI;
+        $pointdist[$bestJ] = $bestDist;
+        ($pointlist[$bestJ], $pointlist[$treecount]) = ($pointlist[$treecount], $pointlist[$bestJ]);
+        ($pointprev[$bestJ], $pointprev[$treecount]) = ($pointprev[$treecount], $pointprev[$bestJ]);
+        ($pointdist[$bestJ], $pointdist[$treecount]) = ($pointdist[$treecount], $pointdist[$bestJ]);
+        $treecount++;
+    }
+    
+    my @points = ();
+    {
+        my $i = $treecount-1;
+        while ($i > 0) {
+            unshift @points, $pointlist[$i];
+            $i = $pointprev[$i];
+        }
+    }
+    return Slic3r::Polyline->new($from, @points);
 }
 
 1;

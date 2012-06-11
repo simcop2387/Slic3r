@@ -28,6 +28,7 @@ use Moo 0.091009;
 use Slic3r::Config;
 use Slic3r::ExPolygon;
 use Slic3r::Extruder;
+use Slic3r::Extruder::MotionPlanner;
 use Slic3r::ExtrusionLoop;
 use Slic3r::ExtrusionPath;
 use Slic3r::ExtrusionPath::Arc;
@@ -142,6 +143,7 @@ our $retract_length         = 1;    # mm
 our $retract_restart_extra  = 0;    # mm
 our $retract_speed          = 30;   # mm/s
 our $retract_before_travel  = 2;    # mm
+our $retract_on_layer_change = 1;
 our $retract_lift           = 0;    # mm
 
 # cooling options

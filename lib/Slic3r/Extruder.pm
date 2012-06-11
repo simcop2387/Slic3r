@@ -2,7 +2,8 @@ package Slic3r::Extruder;
 use Moo;
 
 use Slic3r::ExtrusionPath ':roles';
-use Slic3r::Geometry qw(scale unscale);
+use Slic3r::Geometry qw(scale unscale points_coincide PI X Y);
+use Slic3r::Geometry::Clipper qw(union_ex);
 
 has 'layer'              => (is => 'rw');
 has 'shift_x'            => (is => 'rw', default => sub {0} );
@@ -10,6 +11,8 @@ has 'shift_y'            => (is => 'rw', default => sub {0} );
 has 'z'                  => (is => 'rw', default => sub {0} );
 has 'speed'              => (is => 'rw');
 
+has 'motionplanner'      => (is => 'rw');
+has 'straight_once'      => (is => 'rw');
 has 'extrusion_distance' => (is => 'rw', default => sub {0} );
 has 'elapsed_time'       => (is => 'rw', default => sub {0} );  # seconds
 has 'total_extrusion_length' => (is => 'rw', default => sub {0} );
@@ -49,18 +52,35 @@ my %role_speeds = (
     &EXTR_ROLE_SUPPORTMATERIAL              => 'perimeter',
 );
 
-use Slic3r::Geometry qw(points_coincide PI X Y);
+sub set_shift {
+    my $self = shift;
+    my @shift = @_;
+    
+    # adjust last position
+    $self->last_pos($self->last_pos->clone->translate(
+        scale($self->shift_x - $shift[X]),
+        scale($self->shift_y - $shift[Y]),
+    ));
+    
+    $self->shift_x($shift[X]);
+    $self->shift_y($shift[Y]);
+}
 
 sub change_layer {
     my $self = shift;
     my ($layer) = @_;
     
     $self->layer($layer);
+    if ($Slic3r::avoid_crossing_perimeters) {
+        $self->motionplanner(Slic3r::Extruder::MotionPlanner->new(
+            islands => union_ex([ map @{$_->expolygon}, @{$layer->slices} ], undef, 1),
+        ));
+    }
     my $z = $Slic3r::z_offset + $layer->print_z * $Slic3r::scaling_factor;
     
     my $gcode = "";
     
-    $gcode .= $self->retract(move_z => $z);
+    $gcode .= $self->retract(move_z => $z) if $Slic3r::retract_on_layer_change;
     $gcode .= $self->G0(undef, $z, 0, 'move to next layer (' . $layer->id . ')')
         if $self->z != $z && !$self->lifted;
     
@@ -145,8 +165,7 @@ sub extrude_path {
     }
     
     # go to first point of extrusion path
-    $gcode .= $self->G0($path->points->[0], undef, 0, "move to first $description point")
-        if !points_coincide($self->last_pos, $path->points->[0]);
+    $gcode .= $self->travel_to($path->points->[0], "move to first $description point");
     
     # compensate retraction
     $gcode .= $self->unretract if $self->retracted;
@@ -198,6 +217,20 @@ sub extrude_path {
     }
     
     return $gcode;
+}
+
+sub travel_to {
+    my $self = shift;
+    my ($point, $comment) = @_;
+    
+    return "" if points_coincide($self->last_pos, $point);
+    if ($Slic3r::avoid_crossing_perimeters && $self->last_pos->distance_to($point) > scale 5 && !$self->straight_once) {
+        return join '', map $self->G0($_->b, undef, 0, $comment || ""),
+            $self->motionplanner->shortest_path($self->last_pos, $point)->lines;
+    } else {
+        $self->straight_once(0);
+        return $self->G0($point, undef, 0, $comment || "");
+    }
 }
 
 sub retract {
@@ -296,8 +329,8 @@ sub _G0_G1 {
     
     if ($point) {
         $gcode .= sprintf " X%.${dec}f Y%.${dec}f", 
-            ($point->x * $Slic3r::scaling_factor) + $self->shift_x, 
-            ($point->y * $Slic3r::scaling_factor) + $self->shift_y; #**
+            ($point->[X] * $Slic3r::scaling_factor) + $self->shift_x, 
+            ($point->[Y] * $Slic3r::scaling_factor) + $self->shift_y;
         $self->last_pos($point);
     }
     if (defined $z && $z != $self->z) {
@@ -316,8 +349,8 @@ sub G2_G3 {
     my $gcode = $orientation eq 'cw' ? "G2" : "G3";
     
     $gcode .= sprintf " X%.${dec}f Y%.${dec}f", 
-        ($point->x * $Slic3r::scaling_factor) + $self->shift_x, 
-        ($point->y * $Slic3r::scaling_factor) + $self->shift_y; #**
+        ($point->[X] * $Slic3r::scaling_factor) + $self->shift_x, 
+        ($point->[Y] * $Slic3r::scaling_factor) + $self->shift_y;
     
     # XY distance of the center from the start position
     $gcode .= sprintf " I%.${dec}f J%.${dec}f",

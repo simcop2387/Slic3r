@@ -6,8 +6,19 @@ use warnings;
 use parent 'Slic3r::Polyline';
 
 use Slic3r::Geometry qw(polygon_lines polygon_remove_parallel_continuous_edges
-    scale polygon_remove_acute_vertices polygon_segment_having_point point_in_polygon);
+    scale polygon_remove_acute_vertices polygon_segment_having_point point_in_polygon
+    polygon_has_vertex same_line X1 Y1 X2 Y2);
 use Slic3r::Geometry::Clipper qw(JT_MITER);
+
+sub new_from_bounding_box {
+    my ($class, @bb) = @_;
+    return $class->new(
+        [@bb[X1,Y1]],
+        [@bb[X2,Y1]],
+        [@bb[X2,Y2]],
+        [@bb[X1,Y2]],
+    );
+}
 
 sub lines {
     my $self = shift;
@@ -55,10 +66,22 @@ sub point_on_segment {
     return polygon_segment_having_point($self, $point);
 }
 
+sub has_vertex {
+    my $self = shift;
+    my ($point) = @_;
+    return polygon_has_vertex($self, $point);
+}
+
 sub encloses_point {
     my $self = shift;
     my ($point) = @_;
     return point_in_polygon($point, $self);
+}
+
+sub encloses_point2 {
+    my $self = shift;
+    my ($point) = @_;
+    return ($self->has_vertex($point) || $self->encloses_point($point)) ? 1 : 0;
 }
 
 sub area {
@@ -125,6 +148,28 @@ sub is_printable {
 sub is_valid {
     my $self = shift;
     return @$self >= 3;
+}
+
+sub boost_polygon {
+    my $self = shift;
+    return Boost::Geometry::Utils::polygon($self);
+}
+
+sub clip_line {
+    my $self = shift;
+    my ($line) = @_;  # line must be a Slic3r::Line object
+    
+    return Boost::Geometry::Utils::polygon_linestring_intersection(
+        $self->boost_polygon,
+        $line->boost_linestring,
+    );
+}
+
+sub encloses_line {
+    my $self = shift;
+    my ($line) = @_;
+    my $clip = $self->clip_line($line);
+    return @$clip == 1 && same_line($clip->[0], $line);
 }
 
 1;

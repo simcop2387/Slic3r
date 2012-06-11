@@ -10,6 +10,7 @@ my $build = Module::Build->new(
         'Boost::Geometry::Utils'    => '0',
         'File::Basename'            => '0',
         'Getopt::Long'              => '0',
+        'List::Util'                => '0',
         'Math::Clipper'             => '1.09',
         'Math::ConvexHull'          => '1.0.4',
         'Math::Geometry::Voronoi'   => '1.3',

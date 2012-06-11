@@ -20,6 +20,7 @@ our @EXPORT_OK = qw(
     shortest_path collinear scale unscale merge_collinear_lines
     rad2deg_dir bounding_box_center line_intersects_any douglas_peucker
     polyline_remove_short_segments normal triangle_normal polygon_is_convex
+    almost_same_line
 );
 
 
@@ -105,6 +106,11 @@ sub same_point {
 sub same_line {
     my ($line1, $line2) = @_;
     return same_point($line1->[A], $line2->[A]) && same_point($line1->[B], $line2->[B]);
+}
+
+sub almost_same_line {
+    my ($line1, $line2) = @_;
+    return points_coincide($line1->[A], $line2->[A]) && points_coincide($line1->[B], $line2->[B]);
 }
 
 sub distance_between_points {

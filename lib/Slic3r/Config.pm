@@ -285,6 +285,11 @@ our $Options = {
         cli     => 'randomize-start!',
         type    => 'bool',
     },
+    'avoid_crossing_perimeters' => {
+        label   => 'Avoid crossing perimeters',
+        cli     => 'avoid-crossing-perimeters',
+        type    => 'bool',
+    },
     'support_material' => {
         label   => 'Generate support material',
         cli     => 'support-material!',
@@ -380,6 +385,11 @@ our $Options = {
         label   => 'Minimum travel after retraction (mm)',
         cli     => 'retract-before-travel=f',
         type    => 'f',
+    },
+    'retract_on_layer_change' => {
+        label   => 'Retract on layer change',
+        cli     => 'retract-on-layer-change!',
+        type    => 'bool',
     },
     'retract_lift' => {
         label   => 'Lift Z (mm)',

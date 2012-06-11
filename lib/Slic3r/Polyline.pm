@@ -91,6 +91,7 @@ sub simplify {
 sub reverse {
     my $self = shift;
     @$self = CORE::reverse @$self;
+    return $self;
 }
 
 sub length {

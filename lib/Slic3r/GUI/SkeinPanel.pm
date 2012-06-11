@@ -48,7 +48,7 @@ sub new {
         },
         retract => {
             title => 'Retraction',
-            options => [qw(retract_length retract_lift retract_speed retract_restart_extra retract_before_travel)],
+            options => [qw(retract_length retract_lift retract_speed retract_restart_extra retract_before_travel retract_on_layer_change)],
         },
         cooling => {
             title => 'Cooling',

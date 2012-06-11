@@ -544,8 +544,26 @@ sub write_gcode {
         $Slic3r::print_center->[Y] - (unscale ($print_bb[Y2] - $print_bb[Y1]) / 2) - unscale $print_bb[Y1],
     );
     
+    # initialize a motion planner for object-to-object travel moves
+    my $external_motionplanner;
+    if ($Slic3r::avoid_crossing_perimeters) {
+        # compute the offsetted convex hull for each object and repeat it for each copy.
+        my @islands = ();
+        foreach my $obj_idx (0 .. $#{$self->objects}) {
+            my @island = Slic3r::ExPolygon->new(convex_hull([
+                map @{$_->expolygon->contour}, map @{$_->slices}, @{$self->objects->[$obj_idx]->layers},
+            ]))->translate(map -$_, @shift)->offset_ex(scale 1);
+            foreach my $copy (@{$self->copies->[$obj_idx]}) {
+                push @islands, map $_->clone->translate(@$copy), @island;
+            }
+            
+        }
+        $external_motionplanner = Slic3r::Extruder::MotionPlanner->new(islands => \@islands, no_internal => 1);
+    }
+    
     # prepare the logic to print one layer
     my $skirt_done = 0;  # count of skirt layers done
+    my $last_obj_copy = "";
     my $extrude_layer = sub {
         my ($layer_id, $object_copies) = @_;
         my $gcode = "";
@@ -563,14 +581,15 @@ sub write_gcode {
         
         # extrude skirt
         if ($skirt_done < $Slic3r::skirt_height) {
-            $extruder->shift_x($shift[X]);
-            $extruder->shift_y($shift[Y]);
+            $extruder->set_shift(@shift);
+            $extruder->straight_once(1);
             $gcode .= $extruder->set_acceleration($Slic3r::perimeter_acceleration);
             # skip skirt if we have a large brim
             if ($layer_id < $Slic3r::skirt_height && ($layer_id != 0 || $Slic3r::skirt_distance + ($Slic3r::skirts * $Slic3r::flow->width) > $Slic3r::brim_width)) {
                 $gcode .= $extruder->extrude_loop($_, 'skirt') for @{$self->skirt};
             }
             $skirt_done++;
+            $extruder->straight_once(1);
         }
         
         # extrude brim
@@ -586,8 +605,21 @@ sub write_gcode {
             # won't always trigger the automatic retraction
             $gcode .= $extruder->retract;
             
-            $extruder->shift_x($shift[X] + unscale $copy->[X]);
-            $extruder->shift_y($shift[Y] + unscale $copy->[Y]);
+            # travel to the first perimeter point using the external motion planner
+            if ($external_motionplanner && @{ $layer->perimeters } && !$extruder->straight_once && $last_obj_copy ne "${obj_idx}_${copy}") {
+                $extruder->set_shift(@shift);
+                my $layer_mp = $extruder->motionplanner;
+                $extruder->motionplanner($external_motionplanner);
+                $layer->perimeters->[0]->deserialize;
+                my $target = $layer->perimeters->[0]->polygon->[0]->clone->translate(@$copy);
+                $gcode .= $extruder->travel_to($target, "move to first perimeter point");
+                $extruder->motionplanner($layer_mp);
+            }
+            
+            $extruder->set_shift(
+                ($shift[X] + unscale $copy->[X]),
+                ($shift[Y] + unscale $copy->[Y]),
+            );
             
             # extrude perimeters
             $gcode .= $extruder->extrude($_, 'perimeter') for @{ $layer->perimeters };
@@ -608,6 +640,8 @@ sub write_gcode {
                 $gcode .= $extruder->set_tool(0)
                     if $Slic3r::support_material_tool > 0;
             }
+            
+            $last_obj_copy = "${obj_idx}_${copy}";
         }
         return if !$gcode;
         
@@ -661,8 +695,10 @@ sub write_gcode {
                 # this happens before Z goes down to layer 0 again, so that 
                 # no collision happens hopefully.
                 if ($finished_objects > 0) {
-                    $extruder->shift_x($shift[X] + unscale $copy->[X]);
-                    $extruder->shift_y($shift[Y] + unscale $copy->[Y]);
+                    $extruder->set_shift(
+                        ($shift[X] + unscale $copy->[X]),
+                        ($shift[Y] + unscale $copy->[Y]),
+                    );
                     print $fh $extruder->retract;
                     print $fh $extruder->G0(Slic3r::Point->new(0,0), undef, 0, 'move to origin position for next object');
                 }
