@@ -4,12 +4,12 @@
   <meta http-equiv="Content-Type" content="txt/html; charset=UTF-8">
   <meta name="Generator" content="BlazeBlogger 1.2.0">
   <meta name="Copyright" content="&copy; 2012 Alessandro Ranellucci">
-  <meta name="Date" content="Thu Jun 14 20:01:03 2012">
+  <meta name="Date" content="Thu Jun 14 20:04:24 2012">
   <meta name="Description" content="STL-to-GCODE translator for RepRap printers">
   <meta name="Keywords" content="reprap,3D print,prusa,prusa mendel,skeinforge">
   <link rel="stylesheet" href="../default.css" type="text/css">
   <link rel="alternate" href="../index.rss" title="RSS Feed" type="application/rss+xml">
-  <title>Slic3r - a STL-to-GCODE translator for RepRap 3D printers</title>
+  <title>Slic3r - a G-Code generator for 3D printers</title>
 <style type="text/css">
     body {
       margin-top: 1.0em;
@@ -88,15 +88,16 @@
     <div class="description">
       STL-to-GCODE translator for RepRap printers
     </div>
-    <p>So you've got a 3D printer and a STL file to print. You need a software to convert it to a series of layers and to generate the toolpaths to build it.</p><img src="/images/screenshot.png" style="float: right">
+    <p>So you've got a 3D printer and a file to print. You need a software to convert it to a series of layers and to generate the toolpaths to build it.</p><img src="/images/screenshot.png" style="float: right">
     <p>Here comes Slic3r! Its features are:</p>
     <ul>
       <li><strong>speed</strong></li>
+      <li><strong>ability to read STL, AMF, OBJ files and generate G-Code and SVG</strong></li>
       <li><strong>easy configuration</strong> and little or no calibration</li>
-      <li>provide both a <strong>graphic interface</strong> and a complete <strong>command line</strong> one</li>
+      <li>provide both a <strong>graphic interface</strong> for positioning multiple objects and a complete <strong>command line</strong> API</li>
       <li><strong>open development</strong> (hosted on <a href="http://github.com/alexrj/Slic3r">Github</a> to allow for forks, pull request and contributions)</li>
-      <li>new features</li>
-      <li>easy installation (Mac/Win/Linux and <strong>no dependencies</strong> required)</li>
+      <li>easy installation (Mac/Win/Linux packages and <strong>no dependencies</strong> required)</li>
+      <li>many unique features</li>
     </ul>
     <p>See the <a href="https://github.com/alexrj/Slic3r/blob/master/README.markdown">README</a> for feature list and the <a href="https://github.com/alexrj/Slic3r/wiki/Documentation">Documentation</a> page for online help and tutorials.</p>
   </div>
@@ -139,7 +140,7 @@
       
       <h3>Links</h3>
       <ul>
-        <li><a href="https://reprap.org/">RepRap Wiki</a></li>
+        <li><a href="http://reprap.org/">RepRap Wiki</a></li>
         <li><a href="https://github.com/kliment/Printrun">Pronterface</a></li>
       </ul>
       
