@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="txt/html; charset=UTF-8">
   <meta name="Generator" content="BlazeBlogger 1.2.0">
   <meta name="Copyright" content="&copy; 2012 Alessandro Ranellucci">
-  <meta name="Date" content="Tue May 29 18:01:54 2012">
+  <meta name="Date" content="Thu Jun 14 20:01:03 2012">
   <meta name="Description" content="STL-to-GCODE translator for RepRap printers">
   <meta name="Keywords" content="reprap,3D print,prusa,prusa mendel,skeinforge">
   <link rel="stylesheet" href="default.css" type="text/css">
@@ -104,7 +104,8 @@
     <div style="float: right" class="sidebar">
       <h3>News Archive</h3>
       <ul id="archive">
-        <li><a href="2012/05">May 2012 (2)</a></li>
+        <li><a href="2012/06">June 2012 (1)</a></li>
+<li><a href="2012/05">May 2012 (2)</a></li>
 <li><a href="2012/04">April 2012 (2)</a></li>
 <li><a href="2012/03">March 2012 (1)</a></li>
 <li><a href="2012/02">February 2012 (1)</a></li>
@@ -145,6 +146,37 @@
     </div>
     <div style="width: 500px">
       
+<h2 class="post"><a href="2011/12/8-slic3r-056-is-out" rel="permalink">Slic3r 0.5.6 is out!</a></h2>
+<div class="information">
+   <span class="date">2011-12-15</span>
+</div>
+
+<h4>Improvements:</h4>
+<ul>
+    <li>New extrusion math for more accuracy</li>
+    <li>Make sure there are no empty layers at the bottom</li>
+    <li>Don't slow down retractions on bottom layer</li>
+    <li>Remember last opened directory (until application is closed)</li>
+    <li>Don't die when config has unknown options</li>
+    <li>More STL files are now accepted</li>
+</ul>
+
+<h4>Changes:</h4>
+<ul>
+    <li>Default infill angle is now 45°</li>
+    <li>Default retraction speed is now 30mm/s</li>
+    <li>Comments in gcode must now be explicitely enabled with the new --gcode-comments option</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>Objects had slight dimension errors</li>
+    <li>Removed fatal errors thrown during infill (small regions and infill every N layers)</li>
+    <li>Fixed bolding and font issues on Windows</li>
+    <li>Removed fatal error when nothing in a single layer could be parsed</li>
+    <li>Duplicate was giving bad number of copies</li>
+</ul>
+
 <h2 class="post"><a href="2011/12/7-055b-is-out" rel="permalink">0.5.5b is out!</a></h2>
 <div class="information">
    <span class="date">2011-12-05</span>
