@@ -1,0 +1,33 @@
+
+The previous release contained a bug which caused blobbing on layer change, so you're urged to download this one before yelling at your favorite slicing program!
+
+<h4>New features:</h4>
+<ul>
+    <li>new options to <b>customize support material</b>: pattern, spacing, overhang angle threshold, pattern angle</li>
+    <li>new option to <b>disable the automatic addition of perimeters</b> for sloping walls</li>
+    <li>new <i>brim</i> feature to improve adhesion (as requested by the community!)</i>
+</ul>
+
+<h4>Improvements:</h4>
+<ul>
+    <li><b>support material now works with all geometries</b> (not just flat overhangs)</li>
+    <li>perimeters now keep the <b>full accuracy and resolution</b> of the original model</li>
+    <li>honeycomb travel moves were optimized</li>
+</ul>
+
+<h4>Changes:</h4>
+<ul>
+    <li>skirt loops are now extruded from outside to inside</li>
+    <li>arc geometry compensation was disabled</li>
+</ul>
+
+<h4>Bugfixes:</h4>
+<ul>
+    <li>any <i>retraction_lift</i> value different from "0" caused no retraction on layer change, thus blobbing</li>
+    <li><i>first_layer_speed</i> was accepting mm/m values rather than mm/s</li>
+    <li>some infill lines were not always connected near the perimeters</li>
+    <li>ratio inputs were not accepted on command line</li>
+    <li>ratio inputs were always converted to absolute values on config saving</li>
+    <li>when skirt distance was set to zero, the first loop coincided with the external perimeter of the object</li>
+    <li>first layer extrusion width was computed using general layer height rather first layer height</li>
+</ul>
