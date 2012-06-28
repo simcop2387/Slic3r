@@ -162,20 +162,22 @@ sub find_node {
     my $self = shift;
     my ($point, $near_to) = @_;
     
-    my $new;
-    
     # for optimal pathing, we should check visibility from $point to all $candidates, and then
     # choose the one that is nearest to $near_to among the visible ones; however this is probably too slow
     
     # if we're inside a hole, move to a point on hole;
+    {
+        my $polygon = first { $_->encloses_point($point) } (map $_->holes, map @$_, @{$self->_inner});
+        return nearest_point($point, $polygon) if $polygon;
+    }
+    
     # if we're inside an expolygon move to a point on contour or holes
-    my $container = first { $_->encloses_point($point) }
-        (map $_->holes, map @$_, @{$self->_inner}),
-        (map @$_, @{$self->_inner});
-    if ($container) {
-        my $candidates = $container->isa('Slic3r::ExPolygon') ? [ map @$_, @$container ] : $container;
-        $new = nearest_point($point, $candidates);
-    } else {
+    {
+        my $expolygon = first { $_->encloses_point_quick($point) } (map @$_, @{$self->_inner});
+        return nearest_point($point, [ map @$_, @$expolygon ]) if $expolygon;
+    }
+    
+    {
         my $outer_polygon_idx;
         if (!$self->no_internal) {
             # look for an outer expolygon whose contour contains our point
@@ -191,9 +193,8 @@ sub find_node {
             : [ map @$_, map @$_, @{$self->_outer} ];
         $candidates = [ map @$_, @{$self->_outer->[$outer_polygon_idx]} ]
             if @$candidates == 0;
-        $new = nearest_point($point, $candidates);
+        return nearest_point($point, $candidates);
     }
-    return $new;
 }
 
 sub shortest_path {
