@@ -310,7 +310,7 @@ sub internal_path {
     # so we won't check this
     
     # if there's a straight-line solution, return with it immediately
-    {use XXX; ZZZ $to if @$to > 2;
+    {
         my $straight_line = Slic3r::Line->new($from, $to);
         return $straight_line if $self->encloses_line($straight_line);
     }

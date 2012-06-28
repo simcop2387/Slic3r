@@ -63,7 +63,7 @@ use Slic3r;
 
 {
     local $Slic3r::scaling_factor = 1;
-    $Slic3r::flow->width(0.5);
+    $Slic3r::flow = Slic3r::Flow->new(width => 0.5);
     my $rectangle_with_holes = Slic3r::ExPolygon->new(
         Slic3r::Polygon->new([0,0], [30,0], [30,16], [0,16]),
         Slic3r::Polygon->new([6,6], [6,11], [8,11], [8,6]),
@@ -75,21 +75,21 @@ use Slic3r;
         _inner_margin   => 2,
     );
     
-    if (1) {
+    if (0) {
         require "Slic3r/SVG.pm";
         Slic3r::SVG::output(undef, "space.svg",
-            points => $mp->_points,
-            polygons => [ map @$_, @{$mp->islands} ],
-            red_polygons => [ map $_->holes, map @$_, @{$mp->_inner} ],
+            points          => [ values %{$mp->_pointmap} ],
+            polygons        => [ map @$_, @{$mp->islands} ],
+            red_polygons    => [ map $_->holes, map @$_, @{$mp->_inner} ],
         );
     }
     
     my $sp = sub { $mp->shortest_path(map Slic3r::Point->new($_), @_) };
-    use XXX; XXX $sp->([1,8], [29,8]);
-    is_deeply $sp->([1,8], [29,8]), [[1,8], [2,14], [28,14], [29,8]], 'motion planner - inside island';
-    is_deeply $sp->([7,8], [30,16]), [[7,8], [4,4], [2,2], [2,14], [30,16]], 'motion planner - from hole to contour';
+    
+    is_deeply $sp->([1,8], [29,8]), [[1,8], [4,4], [28,2], [29,8]], 'motion planner - inside island';
+    is_deeply $sp->([7,8], [30,16]), [[7,8], [10,4], [23,8], [28,14], [30,16]], 'motion planner - from hole to contour';
     is_deeply $sp->([7,8], [18,9]), [[7,8], [10,4], [14,6], [18,9]], 'motion planner - from hole to hole';
-    is_deeply $sp->([20,20], [20,1]), [[20,20], [-3,19], [-3,-3], [20,1]], 'motion planner - from outside to inside';
+    is_deeply $sp->([20,20], [20,1]), [[20,20], [32,18], [20,1]], 'motion planner - from outside to inside';
 }
 
 #==========================================================
