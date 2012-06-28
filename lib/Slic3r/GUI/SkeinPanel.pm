@@ -44,7 +44,7 @@ sub new {
         },
         print => {
             title => 'Print settings',
-            options => [qw(perimeters solid_layers fill_density fill_angle fill_pattern solid_fill_pattern randomize_start)],
+            options => [qw(perimeters solid_layers fill_density fill_angle fill_pattern solid_fill_pattern randomize_start avoid_crossing_perimeters)],
         },
         retract => {
             title => 'Retraction',
