@@ -124,6 +124,7 @@ our $first_layer_flow;
 our $perimeters_flow;
 our $infill_flow;
 our $support_material_flow;
+our $raft_material_flow;
 
 # print options
 our $perimeters         = 3;
@@ -184,6 +185,13 @@ our $duplicate_distance = 6;    # mm
 our $complete_objects           = 0;
 our $extruder_clearance_radius  = 20;     # mm
 our $extruder_clearance_height  = 20;     # mm
+
+# raft options
+our $raft_height = 0; # layers
+our $raft_width  = 4; # mm, no option for this yet, should there be? TODO
+our $raft_pattern = "rectilinear"; # fill pattern
+our $raft_pattern_angle = 0; # degrees, 0 seems to be a better default if we have rounded corners
+our $raft_density = 0.2; # 1 == 100%
 
 sub parallelize {
     my %params = @_;

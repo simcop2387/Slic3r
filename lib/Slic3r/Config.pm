@@ -545,6 +545,28 @@ our $Options = {
         cli     => 'extruder-clearance-height=f',
         type    => 'i',
     },
+    'raft_pattern_angle' => {
+        label   => 'Raft Pattern angle (°)',
+        cli     => 'raft-pattern-angle=i',
+        type    => 'i',
+    },
+    'raft_pattern' => {
+        label   => 'Pattern',
+        cli     => 'raft-pattern=s',
+        type    => 'select',
+        values  => [qw(rectilinear honeycomb)],
+        labels  => [qw(rectilinear honeycomb)],
+    },
+    'raft_height' => {
+        label   => 'raft height (layers)',
+        cli     => 'raft-height=i',
+        type    => 'i',
+    },
+    'raft_density' => {
+        label   => 'Raft fill density 0-100%',
+        cli     => 'raft-density=f',
+        type    => 'f',
+    },
 };
 
 sub get {
@@ -816,6 +838,9 @@ sub validate {
     $Slic3r::bridge_speed ||= $Slic3r::infill_speed;
     $Slic3r::solid_infill_speed ||= $Slic3r::infill_speed;
     $Slic3r::top_solid_infill_speed ||= $Slic3r::solid_infill_speed;
+
+    die "Invalid value for --raft-height\n"
+        if $Slic3r::raft_height < 0;
 }
 
 sub replace_options {

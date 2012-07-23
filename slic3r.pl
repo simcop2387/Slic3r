@@ -292,6 +292,13 @@ $j
     --infill-extruder   Extruder to use for infill (1+, default: 1)
     --support-material-extruder
                         Extruder to use for support material (1+, default: 1)
+
+   Raft options:
+    --raft-height       How many layers for the raft (0+, default: 0)
+    --raft-pattern      What pattern to use for the raft (rectilinear, honeycomb)
+    --raft-pattern-angle
+                        Angle for the raft lines (0-359, default: 0)
+    --raft-density      Raft density (0-1, default: 0.2)
     
 EOF
     exit ($exit_code || 0);

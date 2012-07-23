@@ -9,10 +9,6 @@ use Slic3r::Geometry::Clipper qw(diff_ex union_ex intersection_ex offset  JT_MIT
 use Time::HiRes qw(gettimeofday tv_interval);
 use Data::Dumper;
 
-# TODO FIX THIS SHIT
-my $raft_layers = 40; # TODO this is a temp variable until i get a real config for the raft written
-my $raft_size = 6; # TODO this is a temp variable until i get a real config for the raft written
-
 has 'objects'                => (is => 'rw', default => sub {[]});
 has 'copies'                 => (is => 'rw', default => sub {[]});  # obj_idx => [copies...]
 has 'total_extrusion_length' => (is => 'rw');
@@ -323,7 +319,7 @@ sub export_gcode {
     
     # make skirt
     $status_cb->(88, "Generating skirt");
-    #$self->make_skirt;
+    $self->make_skirt;
     $self->make_brim;
     # TODO should we have progress steps in here for brim and raft?
     $self->make_raft;  # this may end up exclusive with brim/skirt, no idea yet.
@@ -438,9 +434,9 @@ EOF
 
 sub make_raft {
     my $self = shift;
-    #return unless $Slic3r::skirts > 0; # force this to go through, will make a config for it later
+    return unless $Slic3r::raft_height > 0; # shortcut if we have no raft layers
     
-    # collect points from the first layer just like we were making a skirt.
+    # collect points from the first layer to find out where the raft should be.
     my @points = ();
     foreach my $obj_idx (0 .. $#{$self->objects}) {
         my $layer = $self->objects->[$obj_idx]->layer(0); # we only need layer 0, since the rest doesn't get affected by a raft.
@@ -451,7 +447,7 @@ sub make_raft {
         );
         push @points, map move_points($_, @layer_points), @{$self->copies->[$obj_idx]};
     }
-    return if @points < 3;  # at least three points required for a convex hull
+    return if @points < 3;  # at least three points required for a convex hull, it should be possible to generate a raft with fewer by doing an offset first but that's for later.
     
     # find a convex hull
     my $convex_hull = convex_hull(\@points);
@@ -460,46 +456,35 @@ sub make_raft {
     my $flow = $Slic3r::first_layer_flow || $Slic3r::flow;
 
     # we only need one outline to generate the raft.
-    # we use skirt_distance currently
-    my $i = 1; # what is this supposed to be? need to find out
-    my $distance = scale ($raft_size + ($flow->spacing * $i));
-    my $outline = offset([$convex_hull], $distance, $Slic3r::scaling_factor * 100, JT_MITER);
+    my $distance = scale ($Slic3r::raft_width);
+    my $outline = offset([$convex_hull], $distance, $Slic3r::scaling_factor * 100, JT_ROUND);
     
-    # generate the raft.  currently i'm doing an outline for proof of concept.  next change will be to make it use the code for infill
-    # TODO I also have to throw all of the layers UP so that it ends up generating correct g-code
+    # generate the raft.  
     my @raft = ();
-    
     my $expolygon = Slic3r::ExPolygon->new($outline->[0]);
-    
-    # TODO i might not even need this?
-    my $ext_path = Slic3r::ExtrusionPath->new(
-        polyline => Slic3r::Polyline->new(@{$outline->[0]}),
-        role => EXTR_ROLE_SKIRT, # TODO pick a good role for this, i don't know where it gets used but i want something appropriate
-    );
-    
-    # TODO these are all using support settings right now, I want raft specific ones
+
     my $fill = Slic3r::Fill->new('print' => $self);
-    my $filler = $fill->filler($Slic3r::support_material_pattern);
-    $filler->angle($Slic3r::support_material_angle);
+    my $filler = $fill->filler($Slic3r::raft_pattern);
+    $filler->angle($Slic3r::raft_pattern_angle);
     
     Slic3r::debugf "Generating raft patterns\n";
     my $support_patterns = [];
-    foreach my $i (1..$raft_layers) {
+
+    foreach my $i (1..$Slic3r::raft_height) {
         my @patterns = ();
         {
             my @paths = $filler->fill_surface(
                 Slic3r::Surface->new(expolygon => $expolygon),
-                    # TODO these settings, do i need seperate ones? no fucking clue right now.  I'll admit i don't even know what they do yet.
-                    # these are likely the density settings and everything that i'll need to change to expose the raft density.
-                    density         => $Slic3r::support_material_flow->spacing / $Slic3r::support_material_spacing,
-                    flow_spacing    => $Slic3r::support_material_flow->spacing,
+                    # the density settings and everything that i'll need to change to expose the raft density.
+                    density         => $Slic3r::raft_density, # TODO for support this was an equation to calculate it based on a physical spacing.  i don't know if that makes sense here, i'm currently just going straight density as if this is fill
+                    flow_spacing    => $Slic3r::support_material_flow->spacing, # TODO what the hell do i replace this with?
                 );
             my $params = shift @paths;
                 
             push @patterns,
                 map Slic3r::ExtrusionPath->new(
                     polyline        => Slic3r::Polyline->new(@$_),
-                    role            => EXTR_ROLE_SUPPORTMATERIAL,
+                    role            => EXTR_ROLE_SKIRT,  # TODO this is a skirt right now since it more closely matches the intent, but doesn't match in name
                     depth_layers    => 1,
                     flow_spacing    => $params->{flow_spacing},
                 ), @paths;
@@ -508,11 +493,6 @@ sub make_raft {
         push @$support_patterns, [@patterns];
     }
     
-    print Data::Dumper->Dump([$support_patterns], ['support_patterns']);
-    
-    # TODO rewrite the below to not need this copy of the data
-    #my %layers = map {($_, $expolygon)} 0..$raft_layers-1;
-
     Slic3r::debugf "Applying raft patterns\n";
     {
         my $clip_pattern = sub {
@@ -520,12 +500,11 @@ sub make_raft {
             my @paths = map { $_->deserialize; $_->clip_with_expolygon($expolygon) }
                 map $_->clip_with_polygon($expolygon->bounding_box_polygon),
                 @{$support_patterns->[ $layer_id % @$support_patterns ]};
-            print Data::Dumper->Dump([$layer_id, @$support_patterns+0, $expolygon.""], [qw[layer_id Nsupport_patterns expolygon]]);
             return @paths;
         };
         my %layer_paths = ();
         Slic3r::parallelize(
-            items => [ 0..$raft_layers-1 ],
+            items => [ 0..$Slic3r::raft_height-1 ],
             thread_cb => sub {
                 my $q = shift;
                 my $paths = {};
@@ -539,7 +518,7 @@ sub make_raft {
                 $layer_paths{$_} = $paths->{$_} for keys %$paths;
             },
             no_threads_cb => sub {
-                $layer_paths{$_} = [ $clip_pattern->($_, $expolygon) ] for 0..$raft_layers-1;
+                $layer_paths{$_} = [ $clip_pattern->($_, $expolygon) ] for 0..$Slic3r::raft_height-1;
             },
         );
         
@@ -549,16 +528,13 @@ sub make_raft {
             push @raft, $expaths;
         }
     }
-
-    #$_->deserialize for @raft; # i think i need this?
     
-    $self->raft(\@raft); # copy the skirt, see if i've got fucked up logic
-    @{$self->skirt} = ();
+    $self->raft(\@raft); # store the raft patterns
     
-    #print Data::Dumper->Dump([\@raft], ['raft']);
-    
+    # TODO remove this entire part below here
     # TODO needs an ID? look for an error during run time.
-    my @blanks = map {Slic3r::Layer->new(id => $_)} 0..$raft_layers-1;
+    # TODO i use this 0..$Slic3r::raft_height-1 sequence all over, should i keep it around for performance?
+    my @blanks = map {Slic3r::Layer->new(id => $_)} 0..$Slic3r::raft_height-1;
     
     
     # TODO this should move to Print::Object->slice, that way things will be sliced correctly still
@@ -697,8 +673,9 @@ sub write_gcode {
         $Slic3r::print_center->[Y] - (unscale ($print_bb[Y2] - $print_bb[Y1]) / 2) - unscale $print_bb[Y1],
     );
     
-    # TODO make this use the raft information.  It should be 0 when no raft is in place
-    my $shift_layer = $raft_layers; # this should likely end up as part of the above shift array but for now i don't want to deal with the constants TODO
+    # TODO this should likely end up as part of the above shift array but for now i don't want to deal with the constants
+    # This is how many layers we're shifted, this prevents the skirt and brim from being printed early
+    my $shift_layer = $Slic3r::raft_height; 
     
     # prepare the logic to print one layer
     my $skirt_done = 0;  # count of skirt layers done
@@ -747,14 +724,13 @@ sub write_gcode {
         # I have to do raft stuff HERE or it won't work since we won't have any objects on this layer.
         # I still do this with the support_fill extruder, this is because the raft is basically support.
         # TODO well, everything!  This may be taking the wrong approach here, but it's based off of the support material stuff
-        if ($raft_done < $shift_layer) { # TODO add config for height, right now i'm using 2 for generating code for testing
+        if ($raft_done < $shift_layer) { # TODO add config for height, right now i'm using 2 for generating code for testing, this config is essential $raft_layers up above
             $gcodegen->shift_x($shift[X]); # need to call these or the first raft piece doesn't end up in the right place
             $gcodegen->shift_y($shift[Y]);
-            $gcode .= $gcodegen->set_tool($Slic3r::support_material_extruder-1); # TODO this should get an option to print with support or not
+            $gcode .= $gcodegen->set_tool($Slic3r::support_material_extruder-1); # TODO this should have an option of which extruder to use.
             
             $gcode .= $gcodegen->extrude_path($_, 'support material') 
                 for $self->raft->[$raft_done]->shortest_path($gcodegen->last_pos);
-            #$gcode .= $gcodegen->extrude_path($_, 'raft') for $self->raft->[$raft_done]; # print this raft layer, TODO, might need a shortest_path call?
             $raft_done++;
         }
         
