@@ -5,8 +5,13 @@ use File::Basename qw(basename fileparse);
 use Math::ConvexHull 1.0.4 qw(convex_hull);
 use Slic3r::ExtrusionPath ':roles';
 use Slic3r::Geometry qw(X Y Z X1 Y1 X2 Y2 PI scale unscale move_points);
-use Slic3r::Geometry::Clipper qw(diff_ex union_ex intersection_ex offset JT_ROUND);
+use Slic3r::Geometry::Clipper qw(diff_ex union_ex intersection_ex offset  JT_MITER JT_ROUND);
 use Time::HiRes qw(gettimeofday tv_interval);
+use Data::Dumper;
+
+# TODO FIX THIS SHIT
+my $raft_layers = 2; # TODO this is a temp variable until i get a real config for the raft written
+my $raft_size = 6; # TODO this is a temp variable until i get a real config for the raft written
 
 has 'objects'                => (is => 'rw', default => sub {[]});
 has 'copies'                 => (is => 'rw', default => sub {[]});  # obj_idx => [copies...]
@@ -22,6 +27,12 @@ has 'skirt' => (
 
 # ordered collection of extrusion paths to build a brim
 has 'brim' => (
+    is      => 'rw',
+    #isa     => 'ArrayRef[Slic3r::ExtrusionLoop]',
+    default => sub { [] },
+);
+
+has 'raft' => (
     is      => 'rw',
     #isa     => 'ArrayRef[Slic3r::ExtrusionLoop]',
     default => sub { [] },
@@ -312,8 +323,9 @@ sub export_gcode {
     
     # make skirt
     $status_cb->(88, "Generating skirt");
-    $self->make_skirt;
+    #$self->make_skirt;
     $self->make_brim;
+    $self->make_raft;  # this may end up exclusive with brim/skirt, no idea yet.
     
     # output everything to a G-code file
     my $output_file = $self->expanded_output_filepath($params{output_file});
@@ -421,6 +433,65 @@ EOF
     print $fh "</svg>\n";
     close $fh;
     print "Done.\n";
+}
+
+sub make_raft {
+    my $self = shift;
+    #return unless $Slic3r::skirts > 0; # force this to go through, will make a config for it later
+    
+    # collect points from the first layer just like we were making a skirt.
+    my @points = ();
+    foreach my $obj_idx (0 .. $#{$self->objects}) {
+        my $layer = $self->objects->[$obj_idx]->layer(0); # we only need layer 0, since the rest doesn't get affected by a raft.
+        my @layer_points = (
+            (map @$_, map @{$_->expolygon}, @{$layer->slices}),
+            (map @$_, @{$layer->thin_walls}),
+            ($layer->support_fills ? map(@{$_->polyline->deserialize}, $layer->support_fills->paths) : ()),
+        );
+        push @points, map move_points($_, @layer_points), @{$self->copies->[$obj_idx]};
+    }
+    return if @points < 3;  # at least three points required for a convex hull
+    
+    print Dumper(\@points);
+    # find out convex hull
+    my $convex_hull = convex_hull(\@points);
+    print Dumper($convex_hull);
+    
+    # draw outlines from outside to inside
+    my $flow = $Slic3r::first_layer_flow || $Slic3r::flow;
+
+    # we only need one outline to generate the raft.
+    # we use skirt_distance currently
+    my $i = 1; # what is this supposed to be? need to find out
+    my $distance = scale ($raft_size + ($flow->spacing * $i));
+    my $outline = offset([$convex_hull], $distance, $Slic3r::scaling_factor * 100, JT_MITER);
+
+    print Dumper($outline);
+    
+    # generate the raft.  currently i'm doing an outline for proof of concept.  next change will be to make it use the code for infill
+    # TODO I also have to throw all of the layers UP so that it ends up generating correct g-code
+    my @raft = Slic3r::ExtrusionLoop->new(
+        polygon => Slic3r::Polygon->new(@{$outline->[0]}),
+        role => EXTR_ROLE_SKIRT, # TODO pick a good role for this, i don't know where it gets used but i want something appropriate
+    );
+
+    $self->raft(\@raft); # copy the skirt, see if i've got fucked up logic
+    @{$self->skirt} = ();
+
+    # TODO needs an ID? look for an error during run time.
+    my @blanks = map {Slic3r::Layer->new(id => $_)} 0..$raft_layers-1;
+    
+    
+    # TODO this should move to Print::Object->slice, that way things will be sliced correctly still
+    # this is all renumbering the layers, this is a HACK
+    for my $obj (@{$self->objects}) {
+        unshift @{$obj->layers}, @blanks;
+        my $id = 0;
+        for my $layer (@{$obj->layers}) {
+            #printf "layer %d -> %d\n", $layer->id(), $id;
+            $layer->id($id++);
+        }
+    }
 }
 
 sub make_skirt {
@@ -547,13 +618,19 @@ sub write_gcode {
         $Slic3r::print_center->[Y] - (unscale ($print_bb[Y2] - $print_bb[Y1]) / 2) - unscale $print_bb[Y1],
     );
     
+    # TODO make this use the raft information.  It should be 0 when no raft is in place
+    my $shift_layer = $raft_layers; # this should likely end up as part of the above shift array but for now i don't want to deal with the constants TODO
+    
     # prepare the logic to print one layer
     my $skirt_done = 0;  # count of skirt layers done
     my $brim_done = 0;
+    my $raft_done = 0;
+    
     my $extrude_layer = sub {
         my ($layer_id, $object_copies) = @_;
         my $gcode = "";
         
+        # TODO this doesn't need the shift_layer, since we want this to happen on the raft if it is on.
         if ($layer_id == 1) {
             for my $t (grep $Slic3r::extruders->[$_], 0 .. $#$Slic3r::temperature) {
                 $gcode .= $gcodegen->set_temperature($Slic3r::extruders->[$t]->temperature, 0, $t)
@@ -568,21 +645,35 @@ sub write_gcode {
         $gcodegen->elapsed_time(0);
         
         # extrude skirt
-        if ($skirt_done < $Slic3r::skirt_height) {
+        # TODO is this right? I need to make sure that we don't do a skirt before the raft is done.
+        if (($skirt_done < $Slic3r::skirt_height) && ($layer_id >= $shift_layer)){
             $gcodegen->shift_x($shift[X]);
             $gcodegen->shift_y($shift[Y]);
             $gcode .= $gcodegen->set_acceleration($Slic3r::perimeter_acceleration);
             # skip skirt if we have a large brim
-            if ($layer_id < $Slic3r::skirt_height && ($layer_id != 0 || $Slic3r::skirt_distance + ($Slic3r::skirts * $Slic3r::flow->width) > $Slic3r::brim_width)) {
+            # TODO take account of the raft here
+            if ($layer_id-$shift_layer < $Slic3r::skirt_height && ($layer_id != $shift_layer || $Slic3r::skirt_distance + ($Slic3r::skirts * $Slic3r::flow->width) > $Slic3r::brim_width)) {
                 $gcode .= $gcodegen->extrude_loop($_, 'skirt') for @{$self->skirt};
             }
             $skirt_done++;
         }
         
         # extrude brim
-        if ($layer_id == 0 && !$brim_done) {
+        # TODO check here for brim on the correct place
+        if ($layer_id == $shift_layer && !$brim_done) {
             $gcode .= $gcodegen->extrude_loop($_, 'brim') for @{$self->brim};
             $brim_done = 1;
+        }
+        
+        # I have to do raft stuff HERE or it won't work since we won't have any objects on this layer.
+        # I still do this with the support_fill extruder, this is because the raft is basically support.
+        # TODO well, everything!  This may be taking the wrong approach here, but it's based off of the support material stuff
+        if ($raft_done < $shift_layer) { # TODO add config for height, right now i'm using 2 for generating code for testing
+            $gcodegen->shift_x($shift[X]);
+            $gcodegen->shift_y($shift[Y]);
+            $gcode .= $gcodegen->set_tool($Slic3r::support_material_extruder-1); # this should get an option to print with support or not
+            $gcode .= $gcodegen->extrude_loop($_, 'raft') for @{$self->raft};
+            $raft_done++;
         }
         
         for my $obj_copy (@$object_copies) {
@@ -613,8 +704,9 @@ sub write_gcode {
                 $gcode .= $gcodegen->set_tool($Slic3r::support_material_extruder-1);
                 $gcode .= $gcodegen->extrude_path($_, 'support material') 
                     for $layer->support_fills->shortest_path($gcodegen->last_pos);
-            }
+            }            
         }
+        
         return if !$gcode;
         
         my $fan_speed = $Slic3r::fan_always_on ? $Slic3r::min_fan_speed : 0;
