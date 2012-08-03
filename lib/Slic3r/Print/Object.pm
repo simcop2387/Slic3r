@@ -28,9 +28,23 @@ sub get_min_max_layer {
     my ($min_z, $max_z) = @_;
     
     # calculate the layer extents
-    my $min_layer = int((unscale($min_z) - ($Slic3r::_first_layer_height + $Slic3r::layer_height / 2)) / $Slic3r::layer_height) - 2;
-    $min_layer = 0 if $min_layer < 0;
-    my $max_layer = int((unscale($max_z) - ($Slic3r::_first_layer_height + $Slic3r::layer_height / 2)) / $Slic3r::layer_height) + 2;
+    my ($min_layer, $max_layer);
+    
+    if ($Slic3r::raft_height == 0) {
+        $min_layer = int((unscale($min_z) - ($Slic3r::_first_layer_height + $Slic3r::layer_height / 2)) / $Slic3r::layer_height) - 2;
+        $min_layer = 0 if $min_layer < 0;
+        $max_layer = int((unscale($max_z) - ($Slic3r::_first_layer_height + $Slic3r::layer_height / 2)) / $Slic3r::layer_height) + 2;
+    } else { # we have a raft, we use a different calculation that ignores _first_layer_height
+        $min_layer = int((unscale($min_z) - ($Slic3r::layer_height + $Slic3r::layer_height / 2)) / $Slic3r::layer_height) - 2;
+        $min_layer = 0 if $min_layer < 0;
+        $max_layer = int((unscale($max_z) - ($Slic3r::layer_height + $Slic3r::layer_height / 2)) / $Slic3r::layer_height) + 2;        
+
+        # raise it up a little here.
+        $min_layer += $Slic3r::raft_height;
+        $max_layer += $Slic3r::raft_height;
+    }
+    
+    # shift the ids up a bit here because of rafts.
     Slic3r::debugf "layers: min = %s, max = %s\n", $min_layer, $max_layer;
     
     return ($min_layer, $max_layer);
