@@ -23,6 +23,19 @@ sub layer_count {
     return scalar @{ $self->layers };
 }
 
+sub get_min_max_layer {
+    my $self = shift;
+    my ($min_z, $max_z) = @_;
+    
+    # calculate the layer extents
+    my $min_layer = int((unscale($min_z) - ($Slic3r::_first_layer_height + $Slic3r::layer_height / 2)) / $Slic3r::layer_height) - 2;
+    $min_layer = 0 if $min_layer < 0;
+    my $max_layer = int((unscale($max_z) - ($Slic3r::_first_layer_height + $Slic3r::layer_height / 2)) / $Slic3r::layer_height) + 2;
+    Slic3r::debugf "layers: min = %s, max = %s\n", $min_layer, $max_layer;
+    
+    return ($min_layer, $max_layer);
+}
+
 sub layer {
     my $self = shift;
     my ($layer_id) = @_;
@@ -156,6 +169,19 @@ sub slice {
     
     warn "No layers were detected. You might want to repair your STL file and retry.\n"
         if !@{$self->layers};
+        
+    # add empty layers to bottom, do this after emptying them so that we can still produce the above warning
+    # right now we only do this for rafts
+    
+    if ($Slic3r::raft_height > 0) {
+        my @blanks = map {Slic3r::Layer->new(id => $_)} 0..$Slic3r::raft_height-1;    
+    
+        unshift @{$self->layers}, @blanks;
+        my $layer_count = $#{$self->layers}; # we aren't removing or adding layers now so do this once
+        for (my $i=0; $i <= $layer_count; $i++) {
+            $self->layers->[$i]->id($i);
+        }
+    }
 }
 
 sub cleanup {

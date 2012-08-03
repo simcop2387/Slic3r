@@ -84,11 +84,20 @@ has 'fills' => (
 sub _build_slice_z {
     my $self = shift;
     
-    if ($self->id == 0) {
-        return $Slic3r::_first_layer_height / 2 / $Slic3r::scaling_factor;
+    # account for the rafts by computing an offset for them
+    my $id = $self->id() - $Slic3r::raft_height;
+    
+    if ($Slic3r::raft_height > 0) {
+      # we use a much simpler calculation when we have a raft, since we won't ever have a first_layer_height on the object
+      return ($id * $Slic3r::layer_height) + ($Slic3r::layer_height/2)
+    } else {
+        if ($id == 0) {
+            return $Slic3r::_first_layer_height / 2 / $Slic3r::scaling_factor;
+        } else {
+            return ($Slic3r::_first_layer_height + (($id-1) * $Slic3r::layer_height) + ($Slic3r::layer_height/2))
+                   / $Slic3r::scaling_factor; #/ #This is here for naive syntax highlighters, leave it alone.
+        }
     }
-    return ($Slic3r::_first_layer_height + (($self->id-1) * $Slic3r::layer_height) + ($Slic3r::layer_height/2))
-        / $Slic3r::scaling_factor;  #/
 }
 
 # Z used for printing
