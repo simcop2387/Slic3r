@@ -5,7 +5,7 @@ use File::Basename qw(basename fileparse);
 use Math::ConvexHull 1.0.4 qw(convex_hull);
 use Slic3r::ExtrusionPath ':roles';
 use Slic3r::Geometry qw(X Y Z X1 Y1 X2 Y2 PI scale unscale move_points);
-use Slic3r::Geometry::Clipper qw(diff_ex union_ex intersection_ex offset  JT_MITER JT_ROUND);
+use Slic3r::Geometry::Clipper qw(diff_ex union_ex intersection_ex offset JT_ROUND);
 use Time::HiRes qw(gettimeofday tv_interval);
 use Data::Dumper;
 
@@ -438,12 +438,14 @@ sub make_raft {
     
     # collect points from the first layer to find out where the raft should be.
     my @points = ();
+    my $bottom = $Slic3r::raft_height;
     foreach my $obj_idx (0 .. $#{$self->objects}) {
-        my $layer = $self->objects->[$obj_idx]->layer($Slic3r::raft_height); # we only need layer 0, since the rest doesn't get affected by a raft.
+        my $layer = $self->objects->[$obj_idx]->layer($bottom); # we only need layer 0, since the rest doesn't get affected by a raft.
+        
         my @layer_points = (
             (map @$_, map @{$_->expolygon}, @{$layer->slices}),
             (map @$_, @{$layer->thin_walls}),
-            ($layer->support_fills ? map(@{$_->polyline->deserialize}, $layer->support_fills->paths) : ()),
+            ($layer->support_fills ? map(@{$_->polyline->deserialize}, @{$layer->support_fills->paths}) : ()),
         );
         push @points, map move_points($_, @layer_points), @{$self->copies->[$obj_idx]};
     }
@@ -469,12 +471,17 @@ sub make_raft {
     
     Slic3r::debugf "Generating raft patterns\n";
     my $support_patterns = [];
+    
+    # these get used to pick the correct direction of the raft.
+    my @blanks = map {Slic3r::Layer->new(id => $_)} 0..$Slic3r::raft_height-1;
 
     foreach my $i (1..$Slic3r::raft_height) {
         my @patterns = ();
         {
+            # tell the filler what layer we're doing
+            $filler->layer($blanks[$i-1]);
             my @paths = $filler->fill_surface(
-                Slic3r::Surface->new(expolygon => $expolygon),
+                    Slic3r::Surface->new(expolygon => $expolygon),
                     # the density settings and everything that i'll need to change to expose the raft density.
                     density         => $Slic3r::raft_density, # TODO for support this was an equation to calculate it based on a physical spacing.  i don't know if that makes sense here, i'm currently just going straight density as if this is fill
                     flow_spacing    => $Slic3r::support_material_flow->spacing, # TODO what the hell do i replace this with?
@@ -529,24 +536,16 @@ sub make_raft {
         }
     }
     
+    # Add a perimeter to the raft also.  That way it'll hold lines together better
+    my $perimeter = Slic3r::ExtrusionPath->new(
+        polyline => Slic3r::Polyline->new(@{$outline->[0]}),
+        role => EXTR_ROLE_SKIRT, # TODO pick a good role for this
+        depth_layers => $Slic3r::raft_height
+    );
+        
+    #unshift @{$_->paths}, $perimeter for (@raft);
+    
     $self->raft(\@raft); # store the raft patterns
-    
-    # TODO remove this entire part below here
-    # TODO needs an ID? look for an error during run time.
-    # TODO i use this 0..$Slic3r::raft_height-1 sequence all over, should i keep it around for performance?
-    my @blanks = map {Slic3r::Layer->new(id => $_)} 0..$Slic3r::raft_height-1;
-    
-    
-    # TODO this should move to Print::Object->slice, that way things will be sliced correctly still
-    # this is all renumbering the layers, this is a HACK
-    for my $obj (@{$self->objects}) {
-        unshift @{$obj->layers}, @blanks;
-        my $id = 0;
-        for my $layer (@{$obj->layers}) {
-            #printf "layer %d -> %d\n", $layer->id(), $id;
-            $layer->id($id++);
-        }
-    }
 }
 
 sub make_skirt {

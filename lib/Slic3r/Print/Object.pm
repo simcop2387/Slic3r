@@ -183,6 +183,19 @@ sub slice {
     
     warn "No layers were detected. You might want to repair your STL file and retry.\n"
         if !@{$self->layers};
+        
+    # add empty layers to bottom, do this after emptying them so that we can still produce the above warning
+    # right now we only do this for rafts
+    
+    if ($Slic3r::raft_height > 0) {
+        my @blanks = map {Slic3r::Layer->new(id => $_)} 0..$Slic3r::raft_height-1;    
+
+        unshift @{$self->layers}, @blanks;
+         my $layer_count = $#{$self->layers}; # we aren't removing or adding layers now so do this once
+         for (my $i=0; $i <= $layer_count; $i++) {
+             $self->layers->[$i]->id($i);
+        }
+    }
 }
 
 sub cleanup {
@@ -525,7 +538,8 @@ sub generate_support_material {
     {
         my @current_support_regions = ();   # expolygons we've started to support (i.e. below the empty interface layers)
         my @queue = ();                     # the number of items of this array determines the number of empty interface layers
-        for my $i (reverse 0 .. $#{$self->layers}) {
+        my $bottom = $Slic3r::raft_height;
+        for my $i (reverse $bottom .. $#{$self->layers}) {
             my $layer = $self->layers->[$i];
             my $lower_layer = $i > 0 ? $self->layers->[$i-1] : undef;
             

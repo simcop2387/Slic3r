@@ -89,7 +89,7 @@ sub _build_slice_z {
     
     if ($Slic3r::raft_height > 0) {
       # we use a much simpler calculation when we have a raft, since we won't ever have a first_layer_height on the object
-      return ($id * $Slic3r::layer_height) + ($Slic3r::layer_height/2)
+      return (($id * $Slic3r::layer_height) + ($Slic3r::layer_height/2)) / $Slic3r::scaling_factor;
     } else {
         if ($id == 0) {
             return $Slic3r::_first_layer_height / 2 / $Slic3r::scaling_factor;
