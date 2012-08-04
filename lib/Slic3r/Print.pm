@@ -439,7 +439,7 @@ sub make_raft {
     # collect points from the first layer to find out where the raft should be.
     my @points = ();
     foreach my $obj_idx (0 .. $#{$self->objects}) {
-        my $layer = $self->objects->[$obj_idx]->layer(0); # we only need layer 0, since the rest doesn't get affected by a raft.
+        my $layer = $self->objects->[$obj_idx]->layer($Slic3r::raft_height); # we only need layer 0, since the rest doesn't get affected by a raft.
         my @layer_points = (
             (map @$_, map @{$_->expolygon}, @{$layer->slices}),
             (map @$_, @{$layer->thin_walls}),
@@ -729,7 +729,7 @@ sub write_gcode {
             $gcodegen->shift_y($shift[Y]);
             $gcode .= $gcodegen->set_tool($Slic3r::support_material_extruder-1); # TODO this should have an option of which extruder to use.
             
-            $gcode .= $gcodegen->extrude_path($_, 'support material') 
+            $gcode .= $gcodegen->extrude_path($_, 'support material')
                 for $self->raft->[$raft_done]->shortest_path($gcodegen->last_pos);
             $raft_done++;
         }
